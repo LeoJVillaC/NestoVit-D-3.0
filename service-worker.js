@@ -1,55 +1,49 @@
-const CACHE_NAME = 'nestorvit-cache-v2'; // <-- Cambia este nombre cada vez que actualices tus archivos
+// Define un nombre único para la caché
+const CACHE_NAME = 'nestorvit-v1';
+
+// Lista de archivos para cachear durante la instalación
 const urlsToCache = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icons/icon-192.png', // <-- Recurso local
-  './icons/icon-512.png', // <-- Recurso local
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
+  '/',
+  'index.html'
+  // Puedes agregar aquí otros recursos como CSS, imágenes, etc. si los tuvieras
 ];
 
-// Evento 'install': se dispara cuando el SW se instala.
+// Evento de instalación: se dispara cuando el service worker se instala por primera vez
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Cache abierto');
+        console.log('Cache abierta');
         return cache.addAll(urlsToCache);
       })
   );
 });
 
-// Evento 'activate': se dispara cuando el SW se activa.
-// Ideal para limpiar cachés antiguos.
+// Evento de activación: se dispara cuando el service worker se activa
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('Eliminando caché antiguo:', cacheName);
-            return caches.delete(cacheName);
+        cacheNames.map(cache => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
           }
         })
       );
     })
   );
-  return self.clients.claim();
 });
 
-
-// Evento 'fetch': intercepta las peticiones de red.
-// Estrategia: Cache-First. Busca en caché, si no lo encuentra, va a la red.
+// Evento fetch: intercepta todas las solicitudes de red
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // Si la respuesta está en el caché, la devuelve.
+        // Si la respuesta está en la caché, la devuelve
         if (response) {
           return response;
         }
-        // Si no, hace la petición a la red.
+        // Si no, intenta obtenerla de la red
         return fetch(event.request);
       })
   );

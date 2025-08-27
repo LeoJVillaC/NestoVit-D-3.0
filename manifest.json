@@ -1,19 +1,19 @@
 {
   "name": "Formulario NESTORVIT 3.0",
   "short_name": "NESTORVIT",
-  "start_url": ".",
+  "description": "Una herramienta para recopilar datos clínicos y generar informes de pacientes de manera eficiente.",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#f0f4f8",
-  "theme_color": "#0d47a1",
-  "description": "Formulario clínico para NESTORVIT 3.0",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "https://iili.io/K2SlXDv.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "https://iili.io/K2SlXDv.png",
       "sizes": "512x512",
       "type": "image/png"
     }

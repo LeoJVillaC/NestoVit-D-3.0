@@ -11,6 +11,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
     <style>
         /* Definición de variables de color para los temas */
         :root {
@@ -514,6 +517,17 @@
                 document.body.removeChild(tempTextArea);
             });
         });
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('ServiceWorker registrado con éxito:', registration.scope);
+          }, err => {
+            console.log('Fallo en el registro del ServiceWorker:', err);
+          });
+        });
+      }
     </script>
 </body>
 </html>
