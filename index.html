@@ -6,6 +6,7 @@
     <title>Formulario NESTORVIT 3.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -47,411 +48,35 @@
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <!-- Vista de Bienvenida -->
     <div id="welcome-view" class="max-w-4xl mx-auto text-center">
         <div class="bg-white rounded-lg shadow-xl p-8 sm:p-12">
             <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Formulario para el</h1>
             <h2 class="text-4xl sm:text-5xl font-bold text-blue-600 mt-2">NESTORVIT 3.0</h2>
             <div class="my-8 flex justify-center">
-                <img src="https://i.ibb.co/6rZ341j/Sin-t-tulo.jpg" alt="Foto de perfil" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white">
+                <img src="https://drive.google.com/uc?export=view&id=1bERSEyBFKEgVXxdcLLnr4lJ6bQEMjWt9" alt="Logo de NESTORVIT" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white">
             </div>
             <button type="button" id="start-btn" class="action-btn w-full sm:w-auto">Iniciar</button>
         </div>
     </div>
 
-    <!-- Vista del Formulario -->
     <div id="main-view" class="hidden max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-xl p-8 mb-6">
-            <h1 class="text-2xl sm:text-3xl font-bold text-center text-slate-900">Formulario NESTORVIT 3.0</h1>
-        </div>
+      </div>
 
-        <form id="clinical-form">
-            <!-- SECCIÓN 1: DATOS DEMOGRÁFICOS Y ANTROPOMÉTRICOS -->
-            <div class="form-section">
-                <h2 class="section-title">SECCIÓN 1: DATOS DEMOGRÁFICOS Y ANTROPOMÉTRICOS</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="edad" class="form-label">1. Edad (años)</label>
-                        <input type="number" id="edad" class="form-input">
-                    </div>
-                    <div>
-                        <label class="form-label">2. Sexo</label>
-                        <div class="mt-2 space-y-2">
-                            <div class="flex items-center"><input id="sexo-hombre" name="sexo" type="radio" value="Hombre" class="form-checkbox"><label for="sexo-hombre" class="ml-3">Hombre</label></div>
-                            <div class="flex items-center"><input id="sexo-mujer" name="sexo" type="radio" value="Mujer" class="form-checkbox"><label for="sexo-mujer" class="ml-3">Mujer</label></div>
-                        </div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="imc" class="form-label">3. Índice de Masa Corporal (IMC) (kg/m²)</label>
-                        <input type="number" step="0.1" id="imc" class="form-input">
-                    </div>
-                    <div class="md:col-span-2" id="fototipos-container">
-                        <label class="form-label">4. Fototipo cutáneo (selección múltiple)</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-                            <div class="flex items-center"><input id="foto-i" type="checkbox" class="form-checkbox"><label for="foto-i" class="ml-2">Fototipo I</label></div>
-                            <div class="flex items-center"><input id="foto-ii" type="checkbox" class="form-checkbox"><label for="foto-ii" class="ml-2">Fototipo II</label></div>
-                            <div class="flex items-center"><input id="foto-iii" type="checkbox" class="form-checkbox"><label for="foto-iii" class="ml-2">Fototipo III</label></div>
-                            <div class="flex items-center"><input id="foto-iv" type="checkbox" class="form-checkbox"><label for="foto-iv" class="ml-2">Fototipo IV</label></div>
-                            <div class="flex items-center"><input id="foto-v" type="checkbox" class="form-checkbox"><label for="foto-v" class="ml-2">Fototipo V</label></div>
-                            <div class="flex items-center"><input id="foto-vi" type="checkbox" class="form-checkbox"><label for="foto-vi" class="ml-2">Fototipo VI</label></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECCIÓN 2: EVALUACIÓN DE FACTORES DE RIESGO -->
-            <div class="form-section">
-                <h2 class="section-title">SECCIÓN 2: EVALUACIÓN DE FACTORES DE RIESGO</h2>
-                <div class="space-y-4">
-                    <div id="estilo-vida-container">
-                        <h3 class="subsection-title">Estilo de Vida y Exposición Solar</h3>
-                        <div class="space-y-2 pl-4">
-                            <div class="flex items-start"><input type="checkbox" id="institucionalizacion" class="form-checkbox mt-1"><label for="institucionalizacion" class="ml-3">Institucionalización.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="escasa-exposicion" class="form-checkbox mt-1"><label for="escasa-exposicion" class="ml-3">Escasa exposición solar.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="fotoprotectores" class="form-checkbox mt-1"><label for="fotoprotectores" class="ml-3">Uso habitual de fotoprotectores.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="vestimenta" class="form-checkbox mt-1"><label for="vestimenta" class="ml-3">Vestimenta que cubre la mayor parte del cuerpo.</label></div>
-                        </div>
-                    </div>
-                    <div id="factores-laborales-container">
-                        <h3 class="subsection-title">Factores Laborales</h3>
-                        <div class="space-y-3 pl-4">
-                            <div><label for="puesto-trabajo" class="form-label">Puesto de trabajo:</label><input type="text" id="puesto-trabajo" class="form-input"></div>
-                            <div class="pt-1"><label class="form-label">Tipo de jornada (>50% del tiempo):</label>
-                                <div class="flex gap-4 mt-1">
-                                    <div class="flex items-center"><input id="trabajo-interior" name="tipo-trabajo" type="radio" value="Interior" class="form-checkbox"><label for="trabajo-interior" class="ml-2">Interior</label></div>
-                                    <div class="flex items-center"><input id="trabajo-exterior" name="tipo-trabajo" type="radio" value="Exterior" class="form-checkbox"><label for="trabajo-exterior" class="ml-2">Exterior</label></div>
-                                </div>
-                            </div>
-                            <div class="flex items-start pt-1"><input type="checkbox" id="sedentarismo" class="form-checkbox mt-1"><label for="sedentarismo" class="ml-3">Trabajo predominantemente sedentario.</label></div>
-                        </div>
-                    </div>
-                    <div id="condiciones-medicas-container">
-                        <h3 class="subsection-title">Condiciones Médicas y Fisiológicas</h3>
-                        <div class="space-y-2 pl-4">
-                            <div class="flex items-start"><input type="checkbox" id="embarazo" class="form-checkbox mt-1"><label for="embarazo" class="ml-3">Embarazo o lactancia.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="insuficiencia-hepatica" class="form-checkbox mt-1"><label for="insuficiencia-hepatica" class="ml-3">Insuficiencia hepática moderada o grave.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="hiperparatiroidismo" class="form-checkbox mt-1"><label for="hiperparatiroidismo" class="ml-3">Hiperparatiroidismo.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="granulomatosas" class="form-checkbox mt-1"><label for="granulomatosas" class="ml-3">Enfermedades granulomatosas (sarcoidosis, TBC).</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="caidas" class="form-checkbox mt-1"><label for="caidas" class="ml-3">Historial de caídas o fracturas por fragilidad.</label></div>
-                            <div id="malabsorcion-container">
-                                <p class="font-medium text-gray-600 mt-3">Síndromes de malabsorción intestinal:</p>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pl-4 pt-1">
-                                    <div class="flex items-start"><input type="checkbox" id="celiaquia" class="form-checkbox mt-1"><label for="celiaquia" class="ml-3">Enfermedad celíaca</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="eii" class="form-checkbox mt-1"><label for="eii" class="ml-3">Enf. Inflamatoria Intestinal</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="bariatrica" class="form-checkbox mt-1"><label for="bariatrica" class="ml-3">Cirugía bariátrica</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="fq" class="form-checkbox mt-1"><label for="fq" class="ml-3">Fibrosis quística</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="insuf-pancreatica" class="form-checkbox mt-1"><label for="insuf-pancreatica" class="ml-3">Insuficiencia pancreática</label></div>
-                                </div>
-                            </div>
-                             <div id="renal-container">
-                                <p class="font-medium text-gray-600 mt-3">Enfermedad renal crónica (Estadio):</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
-                                    <div class="flex items-start"><input type="checkbox" id="erc-g2" class="form-checkbox mt-1"><label for="erc-g2" class="ml-3">G2 (60-89)</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="erc-g3a" class="form-checkbox mt-1"><label for="erc-g3a" class="ml-3">G3a (45-59)</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="erc-g3b" class="form-checkbox mt-1"><label for="erc-g3b" class="ml-3">G3b (30-44)</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="erc-g4" class="form-checkbox mt-1"><label for="erc-g4" class="ml-3">G4 (15-29)</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="erc-g5" class="form-checkbox mt-1"><label for="erc-g5" class="ml-3">G5 (<15)</label></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- SECCIÓN 3: HISTORIAL CLÍNICO Y SÍNTOMAS -->
-            <div class="form-section">
-                <h2 class="section-title">SECCIÓN 3: HISTORIAL CLÍNICO Y SÍNTOMAS</h2>
-                <div class="space-y-4">
-                    <div id="patologia-osea-container">
-                        <h3 class="subsection-title">Patología Ósea</h3>
-                        <div class="pl-4 space-y-2">
-                            <div class="flex items-start"><input type="checkbox" id="osteoporosis" class="form-checkbox mt-1"><label for="osteoporosis" class="ml-3">Osteoporosis diagnosticada.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="osteomalacia" class="form-checkbox mt-1"><label for="osteomalacia" class="ml-3">Osteomalacia o raquitismo diagnosticado.</label></div>
-                            <div>
-                                <p class="font-medium text-gray-600 mt-2">Localización del dolor óseo crónico:</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-espalda" class="form-checkbox mt-1"><label for="dolor-espalda" class="ml-3">Espalda</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-caderas" class="form-checkbox mt-1"><label for="dolor-caderas" class="ml-3">Caderas</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-piernas" class="form-checkbox mt-1"><label for="dolor-piernas" class="ml-3">Piernas</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-costillas" class="form-checkbox mt-1"><label for="dolor-costillas" class="ml-3">Costillas</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-generalizado" class="form-checkbox mt-1"><label for="dolor-generalizado" class="ml-3">Generalizado</label></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="sintomas-musculares-container">
-                        <h3 class="subsection-title">Síntomas Musculares</h3>
-                        <div class="pl-4 space-y-2">
-                             <div>
-                                <p class="font-medium text-gray-600">Localización de debilidad o dolor muscular:</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
-                                    <div class="flex items-start"><input type="checkbox" id="musc-hombros" class="form-checkbox mt-1"><label for="musc-hombros" class="ml-3">Hombros</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="musc-caderas" class="form-checkbox mt-1"><label for="musc-caderas" class="ml-3">Caderas</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="musc-muslos" class="form-checkbox mt-1"><label for="musc-muslos" class="ml-3">Muslos</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="musc-generalizado" class="form-checkbox mt-1"><label for="musc-generalizado" class="ml-3">Generalizado</label></div>
-                                </div>
-                            </div>
-                            <div class="flex items-start pt-1"><input type="checkbox" id="calambres" class="form-checkbox mt-1"><label for="calambres" class="ml-3">Calambres musculares frecuentes.</label></div>
-                            <div>
-                                <label class="font-medium text-gray-600">Temporalidad:</label>
-                                <div class="flex gap-4 mt-1 pl-4">
-                                    <div class="flex items-center"><input id="temp-agudo" name="temporalidad" type="radio" value="Agudo" class="form-checkbox"><label for="temp-agudo" class="ml-2">Agudo</label></div>
-                                    <div class="flex items-center"><input id="temp-cronico" name="temporalidad" type="radio" value="Crónico" class="form-checkbox"><label for="temp-cronico" class="ml-2">Crónico</label></div>
-                                    <div class="flex items-center"><input id="temp-intermitente" name="temporalidad" type="radio" value="Intermitente" class="form-checkbox"><label for="temp-intermitente" class="ml-2">Intermitente</label></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="salud-hormonal-container">
-                        <h3 class="subsection-title">Salud Hormonal</h3>
-                        <div class="pl-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                            <div class="flex items-start"><input type="checkbox" id="menopausia" class="form-checkbox mt-1"><label for="menopausia" class="ml-3">Menopausia / Perimenopausia.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="hipotiroidismo" class="form-checkbox mt-1"><label for="hipotiroidismo" class="ml-3">Hipotiroidismo.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="hipertiroidismo" class="form-checkbox mt-1"><label for="hipertiroidismo" class="ml-3">Hipertiroidismo.</label></div>
-                        </div>
-                    </div>
-                    <div id="salud-mental-container">
-                        <h3 class="subsection-title">Salud Mental (Cuestionario Salamanca - Puntuación)</h3>
-                        <div class="pl-4 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
-                            <div><label for="sq-par" class="form-label">Paranoide</label><input type="number" id="sq-par" class="form-input"></div>
-                            <div><label for="sq-esq" class="form-label">Esquizoide</label><input type="number" id="sq-esq" class="form-input"></div>
-                            <div><label for="sq-eqt" class="form-label">Esquizotípico</label><input type="number" id="sq-eqt" class="form-input"></div>
-                            <div><label for="sq-hist" class="form-label">Histriónico</label><input type="number" id="sq-hist" class="form-input"></div>
-                            <div><label for="sq-ant" class="form-label">Antisocial</label><input type="number" id="sq-ant" class="form-input"></div>
-                            <div><label for="sq-nar" class="form-label">Narcisista</label><input type="number" id="sq-nar" class="form-input"></div>
-                            <div><label for="sq-ie-imp" class="form-label">IE Impulsivo</label><input type="number" id="sq-ie-imp" class="form-input"></div>
-                            <div><label for="sq-ie-lim" class="form-label">IE Límite</label><input type="number" id="sq-ie-lim" class="form-input"></div>
-                            <div><label for="sq-anan" class="form-label">Anancástico</label><input type="number" id="sq-anan" class="form-input"></div>
-                            <div><label for="sq-dep" class="form-label">Dependiente</label><input type="number" id="sq-dep" class="form-input"></div>
-                            <div><label for="sq-ans" class="form-label">Ansioso</label><input type="number" id="sq-ans" class="form-input"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECCIÓN 4: DATOS DE LABORATORIO -->
-            <div class="form-section">
-                <h2 class="section-title">SECCIÓN 4: DATOS DE LABORATORIO</h2>
-                <div class="flex items-center space-x-6">
-                    <span class="text-sm font-medium text-gray-700">Analítica:</span>
-                    <div class="flex items-center"><input type="radio" id="lab-realizado" name="lab-status" value="realizado" class="form-checkbox"><label for="lab-realizado" class="ml-2">Realizado</label></div>
-                    <div class="flex items-center"><input type="radio" id="lab-no-realizado" name="lab-status" value="no-realizado" class="form-checkbox" checked><label for="lab-no-realizado" class="ml-2">No Realizado</label></div>
-                </div>
-
-                <div id="lab-data-container" class="hidden mt-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                         <div><label for="niveles-25ohd" class="form-label">25-OH-Vitamina D (ng/mL):</label><input type="text" id="niveles-25ohd" class="form-input"></div>
-                         <div><label for="fecha-determinacion" class="form-label">Fecha de la determinación:</label><input type="date" id="fecha-determinacion" class="form-input"></div>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div>
-                            <h4 class="font-semibold text-blue-700 border-b border-blue-200 pb-1 mb-3">Perfil de Diabetes</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-glucosa" class="form-label">Glucosa</label><input type="text" id="lab-glucosa" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-glucosa-norm" class="form-checkbox"><label for="lab-glucosa-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-hba1c" class="form-label">HbA1c (%)</label><input type="text" id="lab-hba1c" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-hba1c-norm" class="form-checkbox"><label for="lab-hba1c-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-insulina" class="form-label">Insulina</label><input type="text" id="lab-insulina" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-insulina-norm" class="form-checkbox"><label for="lab-insulina-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-homa" class="form-label">Índice HOMA</label><input type="text" id="lab-homa" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-homa-norm" class="form-checkbox"><label for="lab-homa-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-blue-700 border-b border-blue-200 pb-1 mb-3">Perfil Lipídico</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-total" class="form-label">Colesterol Total</label><input type="text" id="lab-col-total" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-total-norm" class="form-checkbox"><label for="lab-col-total-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-hdl" class="form-label">Colesterol HDL</label><input type="text" id="lab-col-hdl" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-hdl-norm" class="form-checkbox"><label for="lab-col-hdl-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-ldl" class="form-label">Colesterol LDL</label><input type="text" id="lab-col-ldl" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-ldl-norm" class="form-checkbox"><label for="lab-col-ldl-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-trigliceridos" class="form-label">Triglicéridos</label><input type="text" id="lab-trigliceridos" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-trigliceridos-norm" class="form-checkbox"><label for="lab-trigliceridos-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-blue-700 border-b border-blue-200 pb-1 mb-3">Perfil Renal</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-creatinina" class="form-label">Creatinina</label><input type="text" id="lab-creatinina" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-creatinina-norm" class="form-checkbox"><label for="lab-creatinina-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-fg" class="form-label">Filtrado Glomerular</label><input type="text" id="lab-fg" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-fg-norm" class="form-checkbox"><label for="lab-fg-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-blue-700 border-b border-blue-200 pb-1 mb-3">Perfil Hepático</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-alt" class="form-label">ALT/GPT</label><input type="text" id="lab-alt" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-alt-norm" class="form-checkbox"><label for="lab-alt-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-ggt" class="form-label">GGT</label><input type="text" id="lab-ggt" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-ggt-norm" class="form-checkbox"><label for="lab-ggt-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-bilirrubina" class="form-label">Bilirrubina Total</label><input type="text" id="lab-bilirrubina" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-bilirrubina-norm" class="form-checkbox"><label for="lab-bilirrubina-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-fosfatasa" class="form-label">Fosfatasa Alcalina</label><input type="text" id="lab-fosfatasa" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-fosfatasa-norm" class="form-checkbox"><label for="lab-fosfatasa-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-blue-700 border-b border-blue-200 pb-1 mb-3">Perfil Tiroideo</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-tsh" class="form-label">TSH</label><input type="text" id="lab-tsh" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-tsh-norm" class="form-checkbox"><label for="lab-tsh-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-t4l" class="form-label">T4L</label><input type="text" id="lab-t4l" class="form-input"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-t4l-norm" class="form-checkbox"><label for="lab-t4l-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 mb-4">
-                <button type="button" id="generate-report-btn" class="action-btn w-full">
-                    Generar Informe
-                </button>
-            </div>
-        </form>
-    </div>
-
-    <!-- Vista del Informe -->
     <div id="report-view" class="hidden max-w-4xl mx-auto">
-        <div class="bg-white rounded-lg shadow-xl p-8">
-            <h2 class="text-2xl font-bold text-center text-slate-900 mb-6">Resumen del Paciente</h2>
-            <div class="flex justify-center gap-4 mb-6">
-                <button type="button" id="back-to-form-btn" class="action-btn w-32 bg-slate-500 hover:bg-slate-600">Volver</button>
-                <button type="button" id="copy-report-btn" class="action-btn w-32">Copiar Informe</button>
-            </div>
-            <pre id="report-content" class="w-full h-auto"></pre>
-        </div>
-    </div>
+      </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const welcomeView = document.getElementById('welcome-view');
-            const mainView = document.getElementById('main-view');
-            const reportView = document.getElementById('report-view');
-            
-            const startBtn = document.getElementById('start-btn');
-            const generateBtn = document.getElementById('generate-report-btn');
-            const backBtn = document.getElementById('back-to-form-btn');
-            const copyBtn = document.getElementById('copy-report-btn');
-            const reportContent = document.getElementById('report-content');
-
-            // --- Lógica de navegación ---
-            startBtn.addEventListener('click', () => {
-                welcomeView.classList.add('hidden');
-                mainView.classList.remove('hidden');
+      // ... (todo el código Javascript va aquí) ...
+    </script>
+    
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => console.log('ServiceWorker registrado con éxito.'))
+                    .catch(err => console.log('Fallo en el registro del ServiceWorker: ', err));
             });
-
-            backBtn.addEventListener('click', () => {
-                reportView.classList.add('hidden');
-                mainView.classList.remove('hidden');
-            });
-            
-            // --- Lógica para mostrar/ocultar sección de laboratorio ---
-            document.querySelectorAll('input[name="lab-status"]').forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    document.getElementById('lab-data-container').classList.toggle('hidden', e.target.value !== 'realizado');
-                });
-            });
-
-            // --- Funciones auxiliares para obtener datos del formulario ---
-            const getInputValue = (id) => document.getElementById(id)?.value || '';
-            const getRadioValue = (name) => document.querySelector(`input[name="${name}"]:checked`)?.value || 'No especificado';
-            
-            const getCheckedOptions = (containerId) => {
-                const options = [];
-                document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`).forEach(checkbox => {
-                    const label = document.querySelector(`label[for="${checkbox.id}"]`);
-                    if (label) options.push(label.textContent.trim());
-                });
-                return options;
-            };
-            
-            const getLabValue = (baseId) => {
-                const value = getInputValue(baseId);
-                const isNormal = document.getElementById(`${baseId}-norm`)?.checked;
-                if (isNormal) return 'Normal';
-                return value || 'No especificado';
-            };
-
-            // --- Función para generar y mostrar el informe ---
-            generateBtn.addEventListener('click', () => {
-                let reportText = "=== RESUMEN CLÍNICO DEL PACIENTE ===\n\n";
-
-                const addSection = (title, content) => {
-                    if (content && (!Array.isArray(content) || content.length > 0)) {
-                        reportText += `--- ${title.toUpperCase()} ---\n`;
-                        if (Array.isArray(content)) {
-                            content.forEach(item => reportText += `- ${item}\n`);
-                        } else {
-                            reportText += `${content}\n`;
-                        }
-                        reportText += "\n";
-                    }
-                };
-                
-                const addKeyValueSection = (title, dataObject) => {
-                     const entries = Object.entries(dataObject).filter(([key, value]) => value && value.trim() !== '' && value.trim() !== 'No especificado');
-                     if(entries.length > 0) {
-                        reportText += `--- ${title.toUpperCase()} ---\n`;
-                        entries.forEach(([key, value]) => {
-                           reportText += `${key}: ${value}\n`;
-                        });
-                        reportText += "\n";
-                     }
-                };
-
-                const edad = getInputValue('edad');
-                const sexo = getRadioValue('sexo');
-                const imc = getInputValue('imc');
-                addKeyValueSection("Datos Demográficos", { "Edad": `${edad} años`, "Sexo": sexo, "IMC": imc });
-                addSection("Fototipos Cutáneos", getCheckedOptions('fototipos-container'));
-                addSection("Estilo de Vida", getCheckedOptions('estilo-vida-container'));
-                addKeyValueSection("Factores Laborales", { "Puesto": getInputValue('puesto-trabajo'), "Jornada": getRadioValue('tipo-trabajo'), "Sedentarismo": document.getElementById('sedentarismo').checked ? 'Sí' : 'No' });
-                addSection("Condiciones Médicas", [
-                    ...getCheckedOptions('condiciones-medicas-container'),
-                    ...getCheckedOptions('malabsorcion-container'),
-                    ...getCheckedOptions('renal-container')
-                ]);
-                addSection("Patología Ósea", getCheckedOptions('patologia-osea-container'));
-                addSection("Dolor Óseo Crónico", getCheckedOptions('patologia-osea-container div:last-child'));
-                addSection("Síntomas Musculares", getCheckedOptions('sintomas-musculares-container div:first-child'));
-                if (document.getElementById('calambres').checked) addSection("Calambres", ["Frecuentes"]);
-                addKeyValueSection("Temporalidad Muscular", { "Tipo": getRadioValue('temporalidad') });
-                addSection("Salud Hormonal", getCheckedOptions('salud-hormonal-container'));
-                
-                const salamancaScores = {
-                    Paranoide: getInputValue('sq-par'), Esquizotípico: getInputValue('sq-eqt'), Esquizoide: getInputValue('sq-esq'),
-                    Histriónico: getInputValue('sq-hist'), Antisocial: getInputValue('sq-ant'), Narcisista: getInputValue('sq-nar'),
-                    'IE Impulsivo': getInputValue('sq-ie-imp'), 'IE Límite': getInputValue('sq-ie-lim'), Anancástico: getInputValue('sq-anan'),
-                    Dependiente: getInputValue('sq-dep'), Ansioso: getInputValue('sq-ans'),
-                };
-                addKeyValueSection("Cuestionario Salamanca", salamancaScores);
-
-                if (getRadioValue('lab-status') === 'realizado') {
-                    reportText += "--- DATOS DE LABORATORIO ---\n";
-                    reportText += `Fecha: ${getInputValue('fecha-determinacion')}\n`;
-                    reportText += `25-OH-Vitamina D: ${getInputValue('niveles-25ohd')} ng/mL\n\n`;
-                    
-                    addKeyValueSection("Perfil Diabetes", { Glucosa: getLabValue('lab-glucosa'), HbA1c: getLabValue('lab-hba1c'), Insulina: getLabValue('lab-insulina'), HOMA: getLabValue('lab-homa') });
-                    addKeyValueSection("Perfil Lipídico", { 'Colesterol Total': getLabValue('lab-col-total'), 'Colesterol HDL': getLabValue('lab-col-hdl'), 'Colesterol LDL': getLabValue('lab-col-ldl'), Trigliceridos: getLabValue('lab-trigliceridos') });
-                    addKeyValueSection("Perfil Renal", { Creatinina: getLabValue('lab-creatinina'), 'Filtrado Glomerular': getLabValue('lab-fg') });
-                    addKeyValueSection("Perfil Hepático", { 'ALT/GPT': getLabValue('lab-alt'), GGT: getLabValue('lab-ggt'), 'Bilirrubina Total': getLabValue('lab-bilirrubina'), 'Fosfatasa Alcalina': getLabValue('lab-fosfatasa') });
-                    addKeyValueSection("Perfil Tiroideo", { TSH: getLabValue('lab-tsh'), T4L: getLabValue('lab-t4l') });
-                } else {
-                     addSection("Datos de Laboratorio", ["Analítica no realizada."]);
-                }
-
-                reportContent.textContent = reportText;
-                mainView.classList.add('hidden');
-                reportView.classList.remove('hidden');
-            });
-
-            // --- Botón para copiar el informe ---
-            copyBtn.addEventListener('click', () => {
-                const textToCopy = reportContent.textContent;
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = textToCopy;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(tempTextArea);
-
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = '¡Copiado!';
-                copyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                    copyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
-                }, 2000);
-            });
-        });
+        }
     </script>
 </body>
 </html>

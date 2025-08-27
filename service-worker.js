@@ -4,7 +4,7 @@ const urlsToCache = [
   './index.html',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
-  'https://i.ibb.co/6rZ341j/Sin-t-tulo.jpg'
+  'https://drive.google.com/uc?export=view&id=1bERSEyBFKEgVXxdcLLnr4lJ6bQEMjWt9'
 ];
 
 self.addEventListener('install', event => {
