@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,69 +7,320 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ffffff">
     <style>
+        /* Configuración base para el modo oscuro y transiciones */
+        :root {
+            --bg-light: #f0f4f8; --text-light: #1e293b;
+            --bg-dark: #1e293b; --text-dark: #f1f5f9;
+            --card-bg-light: #ffffff; --card-bg-dark: #334155;
+            --border-light: #e2e8f0; --border-dark: #475569;
+        }
+        html.dark { --bg-light: var(--bg-dark); --text-light: var(--text-dark); --card-bg-light: var(--card-bg-dark); --border-light: var(--border-dark); }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            transition: background-color 0.3s, color 0.3s;
         }
-        .form-section {
-            @apply mb-8 p-6 bg-white rounded-lg shadow-lg border border-gray-200;
+        .form-section, .view-container {
+            background-color: var(--card-bg-light);
+            border: 1px solid var(--border-light);
+            transition: background-color 0.3s, border-color 0.3s;
+            @apply mb-8 p-6 rounded-lg shadow-lg;
         }
-        .section-title {
-            @apply text-xl font-bold text-slate-800 border-b-2 border-slate-200 pb-3 mb-6;
-        }
-        .subsection-title {
-            @apply font-semibold text-slate-700 mb-2 mt-4;
-        }
-        .form-label {
-            @apply block text-sm font-medium text-slate-600 mb-1;
-        }
+        .section-title { @apply text-xl font-bold text-slate-800 dark:text-slate-100 border-b-2 border-slate-200 dark:border-slate-600 pb-3 mb-6; }
+        .subsection-title { @apply font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-4; }
+        .form-label { @apply block text-sm font-medium text-slate-600 dark:text-slate-300 mb-1; }
         .form-input, .form-select, .form-textarea {
+            background-color: #fff;
+            color: #333;
             @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
         }
-        .form-checkbox {
-            @apply h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500;
+        html.dark .form-input, html.dark .form-select, html.dark .form-textarea {
+            background-color: #475569;
+            border-color: #64748b;
+            color: #f1f5f9;
         }
-        .action-btn {
-            @apply inline-flex justify-center py-3 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105;
-        }
-        #main-view, #report-view, #welcome-view {
-            transition: opacity 0.5s ease-in-out;
-        }
-        .hidden {
-            display: none;
-        }
+        .form-checkbox { @apply h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500; }
+        .action-btn { @apply inline-flex justify-center py-3 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform transform hover:scale-105; }
+        .secondary-btn { @apply inline-flex justify-center py-2 px-4 border border-slate-300 dark:border-slate-500 rounded-md shadow-sm text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700; }
+        #main-view, #report-view, #welcome-view { transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out; }
+        .hidden { display: none; opacity: 0; transform: translateY(20px); }
         #report-content {
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            @apply p-6 bg-slate-50 rounded-lg border border-slate-200 text-sm text-slate-800 max-h-[60vh] overflow-y-auto;
+            white-space: pre-wrap; word-wrap: break-word;
+            @apply p-6 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 text-sm text-slate-800 dark:text-slate-200 max-h-[60vh] overflow-y-auto;
         }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8">
 
-    <div id="welcome-view" class="max-w-4xl mx-auto text-center">
-        <div class="bg-white rounded-lg shadow-xl p-8 sm:p-12">
-            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900">Formulario para el</h1>
-            <h2 class="text-4xl sm:text-5xl font-bold text-blue-600 mt-2">NESTORVIT 3.0</h2>
-            <div class="my-8 flex justify-center">
-                <img src="https://drive.google.com/uc?export=view&id=1bERSEyBFKEgVXxdcLLnr4lJ6bQEMjWt9" alt="Logo de NESTORVIT" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white">
-            </div>
-            <button type="button" id="start-btn" class="action-btn w-full sm:w-auto">Iniciar</button>
+    <header class="max-w-4xl mx-auto mb-6 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <img src="./icons/icon-192.png" alt="Logo" class="w-10 h-10 rounded-full">
+            <h1 class="text-xl font-bold">NESTORVIT 3.0</h1>
         </div>
-    </div>
+        <div>
+            <label for="dark-mode-toggle" class="flex items-center cursor-pointer">
+                <span class="mr-2 text-sm">🌙</span>
+                <div class="relative">
+                    <input type="checkbox" id="dark-mode-toggle" class="sr-only">
+                    <div class="block bg-gray-600 w-14 h-8 rounded-full"></div>
+                    <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                </div>
+            </label>
+        </div>
+    </header>
 
-    <div id="main-view" class="hidden max-w-4xl mx-auto">
-      </div>
+    <main>
+        <div id="welcome-view" class="max-w-4xl mx-auto text-center view-container">
+            <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">Formulario Clínico</h2>
+            <p class="text-4xl sm:text-5xl font-bold text-blue-600 mt-2">NESTORVIT 3.0</p>
+            <div class="my-8 flex justify-center">
+                <img src="./icons/icon-512.png" alt="Logo de NESTORVIT" class="w-40 h-40 rounded-full object-cover shadow-lg border-4 border-white dark:border-slate-500">
+            </div>
+            <button type="button" id="start-btn" class="action-btn w-full sm:w-auto">Iniciar Formulario</button>
+        </div>
 
-    <div id="report-view" class="hidden max-w-4xl mx-auto">
-      </div>
+        <div id="main-view" class="hidden max-w-4xl mx-auto">
+            <form id="nestorvit-form">
+                <div class="form-section">
+                    <h3 class="section-title">1. Datos del Paciente</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="patient-name" class="form-label">Nombre Completo</label>
+                            <input type="text" id="patient-name" name="patientName" class="form-input" required>
+                        </div>
+                        <div>
+                            <label for="patient-id" class="form-label">Nº de Historia Clínica</label>
+                            <input type="text" id="patient-id" name="patientId" class="form-input">
+                        </div>
+                        <div>
+                            <label for="birth-date" class="form-label">Fecha de Nacimiento</label>
+                            <input type="date" id="birth-date" name="birthDate" class="form-input">
+                        </div>
+                        <div>
+                            <label for="gender" class="form-label">Sexo</label>
+                            <select id="gender" name="gender" class="form-select">
+                                <option value="masculino">Masculino</option>
+                                <option value="femenino">Femenino</option>
+                                <option value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
 
-    <script>
-      // ... (todo el código Javascript va aquí) ...
-    </script>
+                <div class="form-section">
+                    <h3 class="section-title">2. Evaluación Clínica</h3>
+                    <p class="subsection-title">Síntomas Principales</p>
+                    <textarea id="main-symptoms" name="mainSymptoms" rows="4" class="form-textarea" placeholder="Describa los síntomas principales..."></textarea>
+                    
+                    <p class="subsection-title">Antecedentes Médicos</p>
+                    <div class="space-y-2 mt-2">
+                        <label class="flex items-center"><input type="checkbox" name="medicalHistory" value="hta" class="form-checkbox mr-2">Hipertensión Arterial</label>
+                        <label class="flex items-center"><input type="checkbox" name="medicalHistory" value="diabetes" class="form-checkbox mr-2">Diabetes Mellitus</label>
+                        <label class="flex items-center"><input type="checkbox" name="medicalHistory" value="cardiopatia" class="form-checkbox mr-2">Cardiopatía</label>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-8">
+                    <button type="button" id="clear-btn" class="secondary-btn">Limpiar Formulario</button>
+                    <button type="submit" id="generate-report-btn" class="action-btn">Generar Informe</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="report-view" class="hidden max-w-4xl mx-auto view-container">
+            <h2 class="section-title">Informe Generado</h2>
+            <div id="report-content"></div>
+            <div class="mt-6 flex flex-wrap gap-4 justify-center">
+                <button id="copy-report-btn" class="action-btn">Copiar al Portapapeles</button>
+                <button id="print-report-btn" class="action-btn">Imprimir</button>
+                <button id="new-form-btn" class="secondary-btn">Nuevo Formulario</button>
+            </div>
+        </div>
+    </main>
     
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = {
+                // DOM Elements
+                views: {
+                    welcome: document.getElementById('welcome-view'),
+                    main: document.getElementById('main-view'),
+                    report: document.getElementById('report-view'),
+                },
+                buttons: {
+                    start: document.getElementById('start-btn'),
+                    generateReport: document.getElementById('generate-report-btn'),
+                    clear: document.getElementById('clear-btn'),
+                    copyReport: document.getElementById('copy-report-btn'),
+                    printReport: document.getElementById('print-report-btn'),
+                    newForm: document.getElementById('new-form-btn'),
+                },
+                form: document.getElementById('nestorvit-form'),
+                reportContent: document.getElementById('report-content'),
+                darkModeToggle: document.getElementById('dark-mode-toggle'),
+                
+                // State
+                currentView: 'welcome',
+                
+                init() {
+                    this.registerEventListeners();
+                    this.loadDarkModeState();
+                    this.loadFormState();
+                    this.showView('welcome');
+                },
+
+                registerEventListeners() {
+                    this.buttons.start.addEventListener('click', () => this.showView('main'));
+                    this.form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+                    this.form.addEventListener('input', () => this.saveFormState());
+                    this.buttons.clear.addEventListener('click', () => this.clearForm());
+                    this.buttons.newForm.addEventListener('click', () => {
+                        this.clearForm();
+                        this.showView('main');
+                    });
+                    this.buttons.copyReport.addEventListener('click', () => this.copyReport());
+                    this.buttons.printReport.addEventListener('click', () => this.printReport());
+                    this.darkModeToggle.addEventListener('change', () => this.toggleDarkMode());
+                },
+
+                showView(viewName) {
+                    this.currentView = viewName;
+                    Object.keys(this.views).forEach(key => {
+                        this.views[key].classList.add('hidden');
+                    });
+                    
+                    const viewToShow = this.views[viewName];
+                    viewToShow.classList.remove('hidden');
+                    // Force reflow to apply transition
+                    setTimeout(() => {
+                        viewToShow.style.opacity = 1;
+                        viewToShow.style.transform = 'translateY(0)';
+                    }, 10);
+                },
+
+                handleFormSubmit(event) {
+                    event.preventDefault();
+                    if (this.form.checkValidity()) {
+                        this.generateReport();
+                        this.showView('report');
+                    } else {
+                        alert('Por favor, completa todos los campos requeridos.');
+                    }
+                },
+
+                generateReport() {
+                    const formData = new FormData(this.form);
+                    const data = Object.fromEntries(formData.entries());
+                    const medicalHistory = formData.getAll('medicalHistory');
+
+                    let report = `INFORME CLÍNICO - NESTORVIT 3.0\n`;
+                    report += `===================================\n\n`;
+                    report += `1. DATOS DEL PACIENTE\n`;
+                    report += `----------------------\n`;
+                    report += `Nombre: ${data.patientName || 'No especificado'}\n`;
+                    report += `Nº Historia: ${data.patientId || 'No especificado'}\n`;
+                    report += `Fecha de Nacimiento: ${data.birthDate || 'No especificado'}\n`;
+                    report += `Sexo: ${data.gender || 'No especificado'}\n\n`;
+                    
+                    report += `2. EVALUACIÓN CLÍNICA\n`;
+                    report += `------------------------\n`;
+                    report += `Síntomas Principales:\n${data.mainSymptoms || 'Ninguno'}\n\n`;
+                    report += `Antecedentes Médicos:\n${medicalHistory.length > 0 ? medicalHistory.join(', ') : 'Ninguno'}\n\n`;
+                    
+                    report += `===================================\n`;
+                    report += `Informe generado el: ${new Date().toLocaleString()}\n`;
+                    
+                    this.reportContent.textContent = report;
+                },
+
+                saveFormState() {
+                    const formData = new FormData(this.form);
+                    const data = {};
+                    for (const [key, value] of formData.entries()) {
+                        if (data[key]) {
+                            if (!Array.isArray(data[key])) {
+                                data[key] = [data[key]];
+                            }
+                            data[key].push(value);
+                        } else {
+                            data[key] = value;
+                        }
+                    }
+                    localStorage.setItem('nestorvitFormData', JSON.stringify(data));
+                },
+
+                loadFormState() {
+                    const savedData = localStorage.getItem('nestorvitFormData');
+                    if (savedData) {
+                        const data = JSON.parse(savedData);
+                        for (const key in data) {
+                            const elements = this.form.elements[key];
+                            if (elements) {
+                                if (elements.type === 'checkbox') {
+                                    // Handle multiple checkboxes with the same name
+                                    const values = Array.isArray(data[key]) ? data[key] : [data[key]];
+                                    document.querySelectorAll(`input[name="${key}"]`).forEach(el => {
+                                        if (values.includes(el.value)) {
+                                            el.checked = true;
+                                        }
+                                    });
+                                } else if (elements.length && elements[0].type === 'radio') {
+                                     // Handle radio buttons
+                                    document.querySelector(`input[name="${key}"][value="${data[key]}"]`).checked = true;
+                                } else {
+                                    elements.value = data[key];
+                                }
+                            }
+                        }
+                    }
+                },
+
+                clearForm() {
+                    if (confirm('¿Estás seguro de que quieres limpiar el formulario? Se perderá todo el progreso no guardado en un informe.')) {
+                        this.form.reset();
+                        localStorage.removeItem('nestorvitFormData');
+                    }
+                },
+
+                copyReport() {
+                    navigator.clipboard.writeText(this.reportContent.textContent)
+                        .then(() => alert('Informe copiado al portapapeles.'))
+                        .catch(err => alert('Error al copiar el informe.'));
+                },
+
+                printReport() {
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.write(`<pre>${this.reportContent.textContent}</pre>`);
+                    printWindow.document.close();
+                    printWindow.print();
+                },
+
+                toggleDarkMode() {
+                    const html = document.documentElement;
+                    if (this.darkModeToggle.checked) {
+                        html.classList.add('dark');
+                        localStorage.setItem('darkMode', 'enabled');
+                    } else {
+                        html.classList.remove('dark');
+                        localStorage.setItem('darkMode', 'disabled');
+                    }
+                },
+
+                loadDarkModeState() {
+                    if (localStorage.getItem('darkMode') === 'enabled' || 
+                       (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches && localStorage.getItem('darkMode') !== 'disabled')) {
+                        this.darkModeToggle.checked = true;
+                        document.documentElement.classList.add('dark');
+                    }
+                }
+            };
+            
+            app.init();
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./service-worker.js')
