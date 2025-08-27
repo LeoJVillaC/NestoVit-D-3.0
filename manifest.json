@@ -1,11 +1,11 @@
 {
   "name": "Formulario NESTORVIT 3.0",
   "short_name": "NESTORVIT",
-  "description": "Una herramienta para recopilar datos clínicos y generar informes de pacientes de manera eficiente.",
-  "start_url": "index.html",
+  "description": "Formulario clínico para la evaluación de Vitamina D.",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#2563eb",
+  "background_color": "#f0f4f8",
+  "theme_color": "#1e293b",
   "icons": [
     {
       "src": "https://iili.io/K2SlXDv.png",

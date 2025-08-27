@@ -29,6 +29,7 @@
             --accent-color-dark: #1d4ed8; /* blue-700 */
             --btn-secondary-bg: #64748b; /* slate-500 */
             --btn-secondary-hover-bg: #475569; /* slate-600 */
+            --btn-disabled-bg: #94a3b8; /* slate-400 */
         }
 
         body.dark {
@@ -44,6 +45,7 @@
             --accent-color-dark: #2563eb; /* blue-600 */
             --btn-secondary-bg: #475569; /* slate-600 */
             --btn-secondary-hover-bg: #334155; /* slate-700 */
+            --btn-disabled-bg: #334155; /* slate-700 */
         }
 
         body {
@@ -59,7 +61,34 @@
         }
         
         .hidden { display: none; }
-        #report-content { white-space: pre-wrap; word-wrap: break-word; }
+        #report-content, #ai-analysis-content { white-space: pre-wrap; word-wrap: break-word; }
+
+        /* Estilo para botones deshabilitados */
+        button:disabled {
+            background-color: var(--btn-disabled-bg);
+            cursor: not-allowed;
+            transform: none;
+        }
+        button:disabled:hover {
+             background-color: var(--btn-disabled-bg);
+        }
+        
+        /* Spinner de carga */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid var(--accent-color);
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 md:p-8">
@@ -79,249 +108,266 @@
     <!-- Vista del Formulario -->
     <div id="main-view" class="hidden max-w-4xl mx-auto">
         <div class="bg-[var(--card-bg-color)] rounded-lg shadow-xl p-6 sm:p-8 mb-6 flex justify-between items-center">
-            <h1 class="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Formulario NESTORVIT 3.0</h1>
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Formulario NESTORVIT 3.0</h1>
+                <p id="progress-indicator" class="text-sm text-[var(--text-secondary)] mt-1">Paso 1 de 4</p>
+            </div>
             <button type="button" id="theme-toggle" class="p-2 rounded-full text-[var(--text-secondary)] hover:bg-slate-500/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--card-bg-color)] focus:ring-[var(--accent-color)]">
                 <svg id="theme-toggle-dark-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
                 <svg id="theme-toggle-light-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 5.05A1 1 0 003.636 6.464l.707.707a1 1 0 001.414-1.414l-.707-.707zM3 11a1 1 0 100-2H2a1 1 0 100 2h1zM13.536 14.95l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 011.414-1.414z"></path></svg>
             </button>
         </div>
 
-        <form id="clinical-form">
-            <!-- SECCIÓN 1: DATOS DEMOGRÁFICOS Y ANTROPOMÉTRICOS -->
-            <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
-                <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 1: DATOS DEMOGRÁFICOS Y ANTROPOMÉTRICOS</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="edad" class="block text-sm font-medium text-[var(--text-label)] mb-1">1. Edad (años)</label>
-                        <input type="number" id="edad" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-label)] mb-1">2. Sexo</label>
-                        <div class="mt-2 space-y-2">
-                            <div class="flex items-center"><input id="sexo-hombre" name="sexo" type="radio" value="Hombre" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="sexo-hombre" class="ml-3 text-sm">Hombre</label></div>
-                            <div class="flex items-center"><input id="sexo-mujer" name="sexo" type="radio" value="Mujer" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="sexo-mujer" class="ml-3 text-sm">Mujer</label></div>
+        <form id="clinical-form" class="pb-24"> <!-- Padding bottom for nav bar -->
+            <div class="form-page">
+                <!-- SECCIÓN 1: DATOS DEMOGRÁFICOS Y ANTROPOMÉTRICOS -->
+                <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 1: DATOS DEMOGRÁFICOS Y ANTROPOMÉTRICOS</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="edad" class="block text-sm font-medium text-[var(--text-label)] mb-1">1. Edad (años)</label>
+                            <input type="number" id="edad" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]">
                         </div>
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="imc" class="block text-sm font-medium text-[var(--text-label)] mb-1">3. Índice de Masa Corporal (IMC) (kg/m²)</label>
-                        <input type="number" step="0.1" id="imc" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]">
-                    </div>
-                    <div class="md:col-span-2" id="fototipos-container">
-                        <label class="block text-sm font-medium text-[var(--text-label)] mb-1">4. Fototipo cutáneo (selección múltiple)</label>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
-                            <div class="flex items-center"><input id="foto-i" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-i" class="ml-2 text-sm">Fototipo I</label></div>
-                            <div class="flex items-center"><input id="foto-ii" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-ii" class="ml-2 text-sm">Fototipo II</label></div>
-                            <div class="flex items-center"><input id="foto-iii" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-iii" class="ml-2 text-sm">Fototipo III</label></div>
-                            <div class="flex items-center"><input id="foto-iv" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-iv" class="ml-2 text-sm">Fototipo IV</label></div>
-                            <div class="flex items-center"><input id="foto-v" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-v" class="ml-2 text-sm">Fototipo V</label></div>
-                            <div class="flex items-center"><input id="foto-vi" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-vi" class="ml-2 text-sm">Fototipo VI</label></div>
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-label)] mb-1">2. Sexo</label>
+                            <div class="mt-2 space-y-2">
+                                <div class="flex items-center"><input id="sexo-hombre" name="sexo" type="radio" value="Hombre" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="sexo-hombre" class="ml-3 text-sm">Hombre</label></div>
+                                <div class="flex items-center"><input id="sexo-mujer" name="sexo" type="radio" value="Mujer" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="sexo-mujer" class="ml-3 text-sm">Mujer</label></div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="imc" class="block text-sm font-medium text-[var(--text-label)] mb-1">3. Índice de Masa Corporal (IMC) (kg/m²)</label>
+                            <input type="number" step="0.1" id="imc" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]">
+                        </div>
+                        <div class="md:col-span-2" id="fototipos-container">
+                            <label class="block text-sm font-medium text-[var(--text-label)] mb-1">4. Fototipo cutáneo (selección múltiple)</label>
+                            <img src="https://iili.io/K2inqGt.png" alt="Ejemplos de fototipos cutáneos" class="w-full rounded-lg my-4 shadow-md" onerror="this.onerror=null;this.style.display='none';">
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                                <div class="flex items-center"><input id="foto-i" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-i" class="ml-2 text-sm">Fototipo I</label></div>
+                                <div class="flex items-center"><input id="foto-ii" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-ii" class="ml-2 text-sm">Fototipo II</label></div>
+                                <div class="flex items-center"><input id="foto-iii" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-iii" class="ml-2 text-sm">Fototipo III</label></div>
+                                <div class="flex items-center"><input id="foto-iv" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-iv" class="ml-2 text-sm">Fototipo IV</label></div>
+                                <div class="flex items-center"><input id="foto-v" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-v" class="ml-2 text-sm">Fototipo V</label></div>
+                                <div class="flex items-center"><input id="foto-vi" type="checkbox" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="foto-vi" class="ml-2 text-sm">Fototipo VI</label></div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: EVALUACIÓN DE FACTORES DE RIESGO -->
-            <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
-                <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 2: EVALUACIÓN DE FACTORES DE RIESGO</h2>
-                <div class="space-y-4">
-                    <div id="estilo-vida-container">
-                        <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Estilo de Vida y Exposición Solar</h3>
-                        <div class="space-y-2 pl-4">
-                            <div class="flex items-start"><input type="checkbox" id="institucionalizacion" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="institucionalizacion" class="ml-3 text-sm">Institucionalización.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="escasa-exposicion" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="escasa-exposicion" class="ml-3 text-sm">Escasa exposición solar.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="fotoprotectores" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="fotoprotectores" class="ml-3 text-sm">Uso habitual de fotoprotectores.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="vestimenta" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="vestimenta" class="ml-3 text-sm">Vestimenta que cubre la mayor parte del cuerpo.</label></div>
-                        </div>
-                    </div>
-                    <div id="factores-laborales-container">
-                        <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Factores Laborales</h3>
-                        <div class="space-y-3 pl-4">
-                            <div><label for="puesto-trabajo" class="block text-sm font-medium text-[var(--text-label)] mb-1">Puesto de trabajo:</label><input type="text" id="puesto-trabajo" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div class="pt-1"><label class="block text-sm font-medium text-[var(--text-label)] mb-1">Tipo de jornada (>50% del tiempo):</label>
-                                <div class="flex gap-4 mt-1">
-                                    <div class="flex items-center"><input id="trabajo-interior" name="tipo-trabajo" type="radio" value="Interior" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="trabajo-interior" class="ml-2 text-sm">Interior</label></div>
-                                    <div class="flex items-center"><input id="trabajo-exterior" name="tipo-trabajo" type="radio" value="Exterior" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="trabajo-exterior" class="ml-2 text-sm">Exterior</label></div>
-                                </div>
+            <div class="form-page hidden">
+                <!-- SECCIÓN 2: EVALUACIÓN DE FACTORES DE RIESGO -->
+                <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 2: EVALUACIÓN DE FACTORES DE RIESGO</h2>
+                    <div class="space-y-4">
+                        <div id="estilo-vida-container">
+                            <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Estilo de Vida y Exposición Solar</h3>
+                            <div class="space-y-2 pl-4">
+                                <div class="flex items-start"><input type="checkbox" id="institucionalizacion" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="institucionalizacion" class="ml-3 text-sm">Institucionalización.</label></div>
+                                <div class="flex items-start"><input type="checkbox" id="escasa-exposicion" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="escasa-exposicion" class="ml-3 text-sm">Escasa exposición solar.</label></div>
+                                <div class="flex items-start"><input type="checkbox" id="fotoprotectores" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="fotoprotectores" class="ml-3 text-sm">Uso habitual de fotoprotectores.</label></div>
+                                <div class="flex items-start"><input type="checkbox" id="vestimenta" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="vestimenta" class="ml-3 text-sm">Vestimenta que cubre la mayor parte del cuerpo.</label></div>
                             </div>
-                            <div class="flex items-start pt-1"><input type="checkbox" id="sedentarismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="sedentarismo" class="ml-3 text-sm">Trabajo predominantemente sedentario.</label></div>
                         </div>
-                    </div>
-                    <div id="condiciones-medicas-container">
-                         <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Condiciones Médicas y Fisiológicas</h3>
-                         <div class="space-y-2 pl-4">
-                             <div class="flex items-start"><input type="checkbox" id="embarazo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="embarazo" class="ml-3 text-sm">Embarazo o lactancia.</label></div>
-                             <div class="flex items-start"><input type="checkbox" id="insuficiencia-hepatica" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="insuficiencia-hepatica" class="ml-3 text-sm">Insuficiencia hepática moderada o grave.</label></div>
-                             <div class="flex items-start"><input type="checkbox" id="hiperparatiroidismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="hiperparatiroidismo" class="ml-3 text-sm">Hiperparatiroidismo.</label></div>
-                             <div class="flex items-start"><input type="checkbox" id="granulomatosas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="granulomatosas" class="ml-3 text-sm">Enfermedades granulomatosas (sarcoidosis, TBC).</label></div>
-                             <div class="flex items-start"><input type="checkbox" id="caidas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="caidas" class="ml-3 text-sm">Historial de caídas o fracturas por fragilidad.</label></div>
-                             <div id="malabsorcion-container">
-                                 <p class="font-medium text-[var(--text-label)] mt-3 text-sm">Síndromes de malabsorción intestinal:</p>
-                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pl-4 pt-1">
-                                     <div class="flex items-start"><input type="checkbox" id="celiaquia" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="celiaquia" class="ml-3 text-sm">Enfermedad celíaca</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="eii" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="eii" class="ml-3 text-sm">Enf. Inflamatoria Intestinal</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="bariatrica" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="bariatrica" class="ml-3 text-sm">Cirugía bariátrica</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="fq" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="fq" class="ml-3 text-sm">Fibrosis quística</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="insuf-pancreatica" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="insuf-pancreatica" class="ml-3 text-sm">Insuficiencia pancreática</label></div>
+                        <div id="factores-laborales-container">
+                            <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Factores Laborales</h3>
+                            <div class="space-y-3 pl-4">
+                                <div><label for="puesto-trabajo" class="block text-sm font-medium text-[var(--text-label)] mb-1">Puesto de trabajo:</label><input type="text" id="puesto-trabajo" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div class="pt-1"><label class="block text-sm font-medium text-[var(--text-label)] mb-1">Tipo de jornada (>50% del tiempo):</label>
+                                    <div class="flex gap-4 mt-1">
+                                        <div class="flex items-center"><input id="trabajo-interior" name="tipo-trabajo" type="radio" value="Interior" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="trabajo-interior" class="ml-2 text-sm">Interior</label></div>
+                                        <div class="flex items-center"><input id="trabajo-exterior" name="tipo-trabajo" type="radio" value="Exterior" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="trabajo-exterior" class="ml-2 text-sm">Exterior</label></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start pt-1"><input type="checkbox" id="sedentarismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="sedentarismo" class="ml-3 text-sm">Trabajo predominantemente sedentario.</label></div>
+                            </div>
+                        </div>
+                        <div id="condiciones-medicas-container">
+                             <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Condiciones Médicas y Fisiológicas</h3>
+                             <div class="space-y-2 pl-4">
+                                 <div class="flex items-start"><input type="checkbox" id="embarazo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="embarazo" class="ml-3 text-sm">Embarazo o lactancia.</label></div>
+                                 <div class="flex items-start"><input type="checkbox" id="insuficiencia-hepatica" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="insuficiencia-hepatica" class="ml-3 text-sm">Insuficiencia hepática moderada o grave.</label></div>
+                                 <div class="flex items-start"><input type="checkbox" id="hiperparatiroidismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="hiperparatiroidismo" class="ml-3 text-sm">Hiperparatiroidismo.</label></div>
+                                 <div class="flex items-start"><input type="checkbox" id="granulomatosas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="granulomatosas" class="ml-3 text-sm">Enfermedades granulomatosas (sarcoidosis, TBC).</label></div>
+                                 <div class="flex items-start"><input type="checkbox" id="caidas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="caidas" class="ml-3 text-sm">Historial de caídas o fracturas por fragilidad.</label></div>
+                                 <div id="malabsorcion-container">
+                                     <p class="font-medium text-[var(--text-label)] mt-3 text-sm">Síndromes de malabsorción intestinal:</p>
+                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 pl-4 pt-1">
+                                         <div class="flex items-start"><input type="checkbox" id="celiaquia" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="celiaquia" class="ml-3 text-sm">Enfermedad celíaca</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="eii" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="eii" class="ml-3 text-sm">Enf. Inflamatoria Intestinal</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="bariatrica" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="bariatrica" class="ml-3 text-sm">Cirugía bariátrica</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="fq" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="fq" class="ml-3 text-sm">Fibrosis quística</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="insuf-pancreatica" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="insuf-pancreatica" class="ml-3 text-sm">Insuficiencia pancreática</label></div>
+                                     </div>
                                  </div>
-                             </div>
-                              <div id="renal-container">
-                                 <p class="font-medium text-[var(--text-label)] mt-3 text-sm">Enfermedad renal crónica (Estadio):</p>
-                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
-                                     <div class="flex items-start"><input type="checkbox" id="erc-g2" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g2" class="ml-3 text-sm">G2 (60-89)</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="erc-g3a" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g3a" class="ml-3 text-sm">G3a (45-59)</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="erc-g3b" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g3b" class="ml-3 text-sm">G3b (30-44)</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="erc-g4" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g4" class="ml-3 text-sm">G4 (15-29)</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="erc-g5" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g5" class="ml-3 text-sm">G5 (&lt;15)</label></div>
+                                  <div id="renal-container">
+                                     <p class="font-medium text-[var(--text-label)] mt-3 text-sm">Enfermedad renal crónica (Estadio):</p>
+                                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
+                                         <div class="flex items-start"><input type="checkbox" id="erc-g2" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g2" class="ml-3 text-sm">G2 (60-89)</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="erc-g3a" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g3a" class="ml-3 text-sm">G3a (45-59)</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="erc-g3b" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g3b" class="ml-3 text-sm">G3b (30-44)</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="erc-g4" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g4" class="ml-3 text-sm">G4 (15-29)</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="erc-g5" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="erc-g5" class="ml-3 text-sm">G5 (&lt;15)</label></div>
+                                     </div>
                                  </div>
                              </div>
                          </div>
-                     </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-page hidden">
+                <!-- SECCIÓN 3: HISTORIAL CLÍNICO Y SÍNTOMAS -->
+                <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 3: HISTORIAL CLÍNICO Y SÍNTOMAS</h2>
+                    <div class="space-y-4">
+                        <div id="patologia-osea-container">
+                            <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Patología Ósea</h3>
+                            <div class="pl-4 space-y-2">
+                                <div class="flex items-start"><input type="checkbox" id="osteoporosis" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="osteoporosis" class="ml-3 text-sm">Osteoporosis diagnosticada.</label></div>
+                                <div class="flex items-start"><input type="checkbox" id="osteomalacia" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="osteomalacia" class="ml-3 text-sm">Osteomalacia o raquitismo diagnosticado.</label></div>
+                                <div id="dolor-oseo-container">
+                                    <p class="font-medium text-[var(--text-label)] mt-2 text-sm">Localización del dolor óseo crónico:</p>
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
+                                        <div class="flex items-start"><input type="checkbox" id="dolor-espalda" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-espalda" class="ml-3 text-sm">Espalda</label></div>
+                                        <div class="flex items-start"><input type="checkbox" id="dolor-caderas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-caderas" class="ml-3 text-sm">Caderas</label></div>
+                                        <div class="flex items-start"><input type="checkbox" id="dolor-piernas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-piernas" class="ml-3 text-sm">Piernas</label></div>
+                                        <div class="flex items-start"><input type="checkbox" id="dolor-costillas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-costillas" class="ml-3 text-sm">Costillas</label></div>
+                                        <div class="flex items-start"><input type="checkbox" id="dolor-generalizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-generalizado" class="ml-3 text-sm">Generalizado</label></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="sintomas-musculares-container">
+                            <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Síntomas Musculares</h3>
+                            <div class="pl-4 space-y-2">
+                                 <div id="dolor-muscular-container">
+                                     <p class="font-medium text-[var(--text-label)] text-sm">Localización de debilidad o dolor muscular:</p>
+                                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
+                                         <div class="flex items-start"><input type="checkbox" id="musc-hombros" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-hombros" class="ml-3 text-sm">Hombros</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="musc-caderas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-caderas" class="ml-3 text-sm">Caderas</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="musc-muslos" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-muslos" class="ml-3 text-sm">Muslos</label></div>
+                                         <div class="flex items-start"><input type="checkbox" id="musc-generalizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-generalizado" class="ml-3 text-sm">Generalizado</label></div>
+                                     </div>
+                                 </div>
+                                 <div class="flex items-start pt-1"><input type="checkbox" id="calambres" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="calambres" class="ml-3 text-sm">Calambres musculares frecuentes.</label></div>
+                                 <div>
+                                     <label class="font-medium text-[var(--text-label)] text-sm">Temporalidad:</label>
+                                     <div class="flex gap-4 mt-1 pl-4">
+                                         <div class="flex items-center"><input id="temp-agudo" name="temporalidad" type="radio" value="Agudo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="temp-agudo" class="ml-2 text-sm">Agudo</label></div>
+                                         <div class="flex items-center"><input id="temp-cronico" name="temporalidad" type="radio" value="Crónico" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="temp-cronico" class="ml-2 text-sm">Crónico</label></div>
+                                         <div class="flex items-center"><input id="temp-intermitente" name="temporalidad" type="radio" value="Intermitente" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="temp-intermitente" class="ml-2 text-sm">Intermitente</label></div>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                        <div id="salud-hormonal-container">
+                            <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Salud Hormonal</h3>
+                            <div class="pl-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                                <div class="flex items-start"><input type="checkbox" id="menopausia" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="menopausia" class="ml-3 text-sm">Menopausia / Perimenopausia.</label></div>
+                                <div class="flex items-start"><input type="checkbox" id="hipotiroidismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="hipotiroidismo" class="ml-3 text-sm">Hipotiroidismo.</label></div>
+                                <div class="flex items-start"><input type="checkbox" id="hipertiroidismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="hipertiroidismo" class="ml-3 text-sm">Hipertiroidismo.</label></div>
+                            </div>
+                        </div>
+                        <div id="salud-mental-container">
+                            <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Salud Mental (Cuestionario Salamanca - Puntuación)</h3>
+                            <div class="pl-4 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
+                                <div><label for="sq-par" class="block text-sm font-medium text-[var(--text-label)] mb-1">Paranoide</label><input type="number" id="sq-par" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-esq" class="block text-sm font-medium text-[var(--text-label)] mb-1">Esquizoide</label><input type="number" id="sq-esq" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-eqt" class="block text-sm font-medium text-[var(--text-label)] mb-1">Esquizotípico</label><input type="number" id="sq-eqt" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-hist" class="block text-sm font-medium text-[var(--text-label)] mb-1">Histriónico</label><input type="number" id="sq-hist" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-ant" class="block text-sm font-medium text-[var(--text-label)] mb-1">Antisocial</label><input type="number" id="sq-ant" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-nar" class="block text-sm font-medium text-[var(--text-label)] mb-1">Narcisista</label><input type="number" id="sq-nar" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-ie-imp" class="block text-sm font-medium text-[var(--text-label)] mb-1">IE Impulsivo</label><input type="number" id="sq-ie-imp" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-ie-lim" class="block text-sm font-medium text-[var(--text-label)] mb-1">IE Límite</label><input type="number" id="sq-ie-lim" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-anan" class="block text-sm font-medium text-[var(--text-label)] mb-1">Anancástico</label><input type="number" id="sq-anan" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-dep" class="block text-sm font-medium text-[var(--text-label)] mb-1">Dependiente</label><input type="number" id="sq-dep" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                                <div><label for="sq-ans" class="block text-sm font-medium text-[var(--text-label)] mb-1">Ansioso</label><input type="number" id="sq-ans" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- SECCIÓN 3: HISTORIAL CLÍNICO Y SÍNTOMAS -->
-            <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
-                <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 3: HISTORIAL CLÍNICO Y SÍNTOMAS</h2>
-                <div class="space-y-4">
-                    <div id="patologia-osea-container">
-                        <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Patología Ósea</h3>
-                        <div class="pl-4 space-y-2">
-                            <div class="flex items-start"><input type="checkbox" id="osteoporosis" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="osteoporosis" class="ml-3 text-sm">Osteoporosis diagnosticada.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="osteomalacia" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="osteomalacia" class="ml-3 text-sm">Osteomalacia o raquitismo diagnosticado.</label></div>
-                            <div id="dolor-oseo-container">
-                                <p class="font-medium text-[var(--text-label)] mt-2 text-sm">Localización del dolor óseo crónico:</p>
-                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-espalda" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-espalda" class="ml-3 text-sm">Espalda</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-caderas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-caderas" class="ml-3 text-sm">Caderas</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-piernas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-piernas" class="ml-3 text-sm">Piernas</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-costillas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-costillas" class="ml-3 text-sm">Costillas</label></div>
-                                    <div class="flex items-start"><input type="checkbox" id="dolor-generalizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="dolor-generalizado" class="ml-3 text-sm">Generalizado</label></div>
+            <div class="form-page hidden">
+                <!-- SECCIÓN 4: DATOS DE LABORATORIO -->
+                <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 4: DATOS DE LABORATORIO</h2>
+                    <div class="flex items-center space-x-6">
+                        <span class="text-sm font-medium text-[var(--text-label)]">Analítica:</span>
+                        <div class="flex items-center"><input type="radio" id="lab-realizado" name="lab-status" value="realizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-realizado" class="ml-2 text-sm">Realizado</label></div>
+                        <div class="flex items-center"><input type="radio" id="lab-no-realizado" name="lab-status" value="no-realizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]" checked><label for="lab-no-realizado" class="ml-2 text-sm">No Realizado</label></div>
+                    </div>
+
+                    <div id="lab-data-container" class="hidden mt-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                             <div><label for="niveles-25ohd" class="block text-sm font-medium text-[var(--text-label)] mb-1">25-OH-Vitamina D (ng/mL):</label><input type="text" id="niveles-25ohd" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                             <div><label for="fecha-determinacion" class="block text-sm font-medium text-[var(--text-label)] mb-1">Fecha de la determinación:</label><input type="date" id="fecha-determinacion" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
+                        </div>
+                        
+                        <div class="space-y-6">
+                            <!-- Perfil Diabetes -->
+                            <div>
+                                <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil de Diabetes</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-glucosa" class="block text-sm font-medium text-[var(--text-label)] mb-1">Glucosa</label><input type="text" id="lab-glucosa" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-glucosa-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-glucosa-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-hba1c" class="block text-sm font-medium text-[var(--text-label)] mb-1">HbA1c (%)</label><input type="text" id="lab-hba1c" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-hba1c-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-hba1c-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-insulina" class="block text-sm font-medium text-[var(--text-label)] mb-1">Insulina</label><input type="text" id="lab-insulina" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-insulina-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-insulina-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-homa" class="block text-sm font-medium text-[var(--text-label)] mb-1">Índice HOMA</label><input type="text" id="lab-homa" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-homa-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-homa-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                </div>
+                            </div>
+                            <!-- Perfil Lipídico -->
+                            <div>
+                                <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Lipídico</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-total" class="block text-sm font-medium text-[var(--text-label)] mb-1">Colesterol Total</label><input type="text" id="lab-col-total" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-total-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-col-total-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-hdl" class="block text-sm font-medium text-[var(--text-label)] mb-1">Colesterol HDL</label><input type="text" id="lab-col-hdl" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-hdl-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-col-hdl-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-ldl" class="block text-sm font-medium text-[var(--text-label)] mb-1">Colesterol LDL</label><input type="text" id="lab-col-ldl" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-ldl-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-col-ldl-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-trigliceridos" class="block text-sm font-medium text-[var(--text-label)] mb-1">Triglicéridos</label><input type="text" id="lab-trigliceridos" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-trigliceridos-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-trigliceridos-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                </div>
+                            </div>
+                            <!-- Perfil Renal -->
+                            <div>
+                                <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Renal</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-creatinina" class="block text-sm font-medium text-[var(--text-label)] mb-1">Creatinina</label><input type="text" id="lab-creatinina" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-creatinina-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-creatinina-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-fg" class="block text-sm font-medium text-[var(--text-label)] mb-1">Filtrado Glomerular</label><input type="text" id="lab-fg" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-fg-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-fg-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                </div>
+                            </div>
+                            <!-- Perfil Hepático -->
+                            <div>
+                                <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Hepático</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-alt" class="block text-sm font-medium text-[var(--text-label)] mb-1">ALT/GPT</label><input type="text" id="lab-alt" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-alt-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-alt-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-ggt" class="block text-sm font-medium text-[var(--text-label)] mb-1">GGT</label><input type="text" id="lab-ggt" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-ggt-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-ggt-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-bilirrubina" class="block text-sm font-medium text-[var(--text-label)] mb-1">Bilirrubina Total</label><input type="text" id="lab-bilirrubina" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-bilirrubina-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-bilirrubina-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-fosfatasa" class="block text-sm font-medium text-[var(--text-label)] mb-1">Fosfatasa Alcalina</label><input type="text" id="lab-fosfatasa" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-fosfatasa-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-fosfatasa-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                </div>
+                            </div>
+                            <!-- Perfil Tiroideo -->
+                            <div>
+                                <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Tiroideo</h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-tsh" class="block text-sm font-medium text-[var(--text-label)] mb-1">TSH</label><input type="text" id="lab-tsh" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-tsh-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-tsh-norm" class="ml-2 text-xs">Normal</label></div></div>
+                                    <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-t4l" class="block text-sm font-medium text-[var(--text-label)] mb-1">T4L</label><input type="text" id="lab-t4l" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-t4l-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-t4l-norm" class="ml-2 text-xs">Normal</label></div></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div id="sintomas-musculares-container">
-                        <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Síntomas Musculares</h3>
-                        <div class="pl-4 space-y-2">
-                             <div id="dolor-muscular-container">
-                                 <p class="font-medium text-[var(--text-label)] text-sm">Localización de debilidad o dolor muscular:</p>
-                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-2 pl-4 pt-1">
-                                     <div class="flex items-start"><input type="checkbox" id="musc-hombros" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-hombros" class="ml-3 text-sm">Hombros</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="musc-caderas" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-caderas" class="ml-3 text-sm">Caderas</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="musc-muslos" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-muslos" class="ml-3 text-sm">Muslos</label></div>
-                                     <div class="flex items-start"><input type="checkbox" id="musc-generalizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="musc-generalizado" class="ml-3 text-sm">Generalizado</label></div>
-                                 </div>
-                             </div>
-                             <div class="flex items-start pt-1"><input type="checkbox" id="calambres" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="calambres" class="ml-3 text-sm">Calambres musculares frecuentes.</label></div>
-                             <div>
-                                 <label class="font-medium text-[var(--text-label)] text-sm">Temporalidad:</label>
-                                 <div class="flex gap-4 mt-1 pl-4">
-                                     <div class="flex items-center"><input id="temp-agudo" name="temporalidad" type="radio" value="Agudo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="temp-agudo" class="ml-2 text-sm">Agudo</label></div>
-                                     <div class="flex items-center"><input id="temp-cronico" name="temporalidad" type="radio" value="Crónico" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="temp-cronico" class="ml-2 text-sm">Crónico</label></div>
-                                     <div class="flex items-center"><input id="temp-intermitente" name="temporalidad" type="radio" value="Intermitente" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="temp-intermitente" class="ml-2 text-sm">Intermitente</label></div>
-                                 </div>
-                             </div>
-                        </div>
-                    </div>
-                    <div id="salud-hormonal-container">
-                        <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Salud Hormonal</h3>
-                        <div class="pl-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
-                            <div class="flex items-start"><input type="checkbox" id="menopausia" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="menopausia" class="ml-3 text-sm">Menopausia / Perimenopausia.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="hipotiroidismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="hipotiroidismo" class="ml-3 text-sm">Hipotiroidismo.</label></div>
-                            <div class="flex items-start"><input type="checkbox" id="hipertiroidismo" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)] mt-1"><label for="hipertiroidismo" class="ml-3 text-sm">Hipertiroidismo.</label></div>
-                        </div>
-                    </div>
-                    <div id="salud-mental-container">
-                        <h3 class="font-semibold text-[var(--text-label)] mb-2 mt-4">Salud Mental (Cuestionario Salamanca - Puntuación)</h3>
-                        <div class="pl-4 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
-                            <div><label for="sq-par" class="block text-sm font-medium text-[var(--text-label)] mb-1">Paranoide</label><input type="number" id="sq-par" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-esq" class="block text-sm font-medium text-[var(--text-label)] mb-1">Esquizoide</label><input type="number" id="sq-esq" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-eqt" class="block text-sm font-medium text-[var(--text-label)] mb-1">Esquizotípico</label><input type="number" id="sq-eqt" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-hist" class="block text-sm font-medium text-[var(--text-label)] mb-1">Histriónico</label><input type="number" id="sq-hist" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-ant" class="block text-sm font-medium text-[var(--text-label)] mb-1">Antisocial</label><input type="number" id="sq-ant" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-nar" class="block text-sm font-medium text-[var(--text-label)] mb-1">Narcisista</label><input type="number" id="sq-nar" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-ie-imp" class="block text-sm font-medium text-[var(--text-label)] mb-1">IE Impulsivo</label><input type="number" id="sq-ie-imp" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-ie-lim" class="block text-sm font-medium text-[var(--text-label)] mb-1">IE Límite</label><input type="number" id="sq-ie-lim" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-anan" class="block text-sm font-medium text-[var(--text-label)] mb-1">Anancástico</label><input type="number" id="sq-anan" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-dep" class="block text-sm font-medium text-[var(--text-label)] mb-1">Dependiente</label><input type="number" id="sq-dep" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                            <div><label for="sq-ans" class="block text-sm font-medium text-[var(--text-label)] mb-1">Ansioso</label><input type="number" id="sq-ans" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                        </div>
-                    </div>
                 </div>
-            </div>
-
-            <!-- SECCIÓN 4: DATOS DE LABORATORIO -->
-            <div class="mb-8 p-6 bg-[var(--card-bg-color)] rounded-lg shadow-lg border border-[var(--border-color)]">
-                <h2 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-3 mb-6">SECCIÓN 4: DATOS DE LABORATORIO</h2>
-                <div class="flex items-center space-x-6">
-                    <span class="text-sm font-medium text-[var(--text-label)]">Analítica:</span>
-                    <div class="flex items-center"><input type="radio" id="lab-realizado" name="lab-status" value="realizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-realizado" class="ml-2 text-sm">Realizado</label></div>
-                    <div class="flex items-center"><input type="radio" id="lab-no-realizado" name="lab-status" value="no-realizado" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]" checked><label for="lab-no-realizado" class="ml-2 text-sm">No Realizado</label></div>
-                </div>
-
-                <div id="lab-data-container" class="hidden mt-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                         <div><label for="niveles-25ohd" class="block text-sm font-medium text-[var(--text-label)] mb-1">25-OH-Vitamina D (ng/mL):</label><input type="text" id="niveles-25ohd" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                         <div><label for="fecha-determinacion" class="block text-sm font-medium text-[var(--text-label)] mb-1">Fecha de la determinación:</label><input type="date" id="fecha-determinacion" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <!-- Perfil Diabetes -->
-                        <div>
-                            <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil de Diabetes</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-glucosa" class="block text-sm font-medium text-[var(--text-label)] mb-1">Glucosa</label><input type="text" id="lab-glucosa" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-glucosa-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-glucosa-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-hba1c" class="block text-sm font-medium text-[var(--text-label)] mb-1">HbA1c (%)</label><input type="text" id="lab-hba1c" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-hba1c-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-hba1c-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-insulina" class="block text-sm font-medium text-[var(--text-label)] mb-1">Insulina</label><input type="text" id="lab-insulina" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-insulina-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-insulina-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-homa" class="block text-sm font-medium text-[var(--text-label)] mb-1">Índice HOMA</label><input type="text" id="lab-homa" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-homa-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-homa-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <!-- Perfil Lipídico -->
-                        <div>
-                            <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Lipídico</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-total" class="block text-sm font-medium text-[var(--text-label)] mb-1">Colesterol Total</label><input type="text" id="lab-col-total" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-total-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-col-total-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-hdl" class="block text-sm font-medium text-[var(--text-label)] mb-1">Colesterol HDL</label><input type="text" id="lab-col-hdl" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-hdl-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-col-hdl-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-col-ldl" class="block text-sm font-medium text-[var(--text-label)] mb-1">Colesterol LDL</label><input type="text" id="lab-col-ldl" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-col-ldl-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-col-ldl-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-trigliceridos" class="block text-sm font-medium text-[var(--text-label)] mb-1">Triglicéridos</label><input type="text" id="lab-trigliceridos" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-trigliceridos-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-trigliceridos-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <!-- Perfil Renal -->
-                        <div>
-                            <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Renal</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-creatinina" class="block text-sm font-medium text-[var(--text-label)] mb-1">Creatinina</label><input type="text" id="lab-creatinina" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-creatinina-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-creatinina-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-fg" class="block text-sm font-medium text-[var(--text-label)] mb-1">Filtrado Glomerular</label><input type="text" id="lab-fg" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-fg-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-fg-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <!-- Perfil Hepático -->
-                        <div>
-                            <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Hepático</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-alt" class="block text-sm font-medium text-[var(--text-label)] mb-1">ALT/GPT</label><input type="text" id="lab-alt" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-alt-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-alt-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-ggt" class="block text-sm font-medium text-[var(--text-label)] mb-1">GGT</label><input type="text" id="lab-ggt" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-ggt-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-ggt-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-bilirrubina" class="block text-sm font-medium text-[var(--text-label)] mb-1">Bilirrubina Total</label><input type="text" id="lab-bilirrubina" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-bilirrubina-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-bilirrubina-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-fosfatasa" class="block text-sm font-medium text-[var(--text-label)] mb-1">Fosfatasa Alcalina</label><input type="text" id="lab-fosfatasa" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-fosfatasa-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-fosfatasa-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                        <!-- Perfil Tiroideo -->
-                        <div>
-                            <h4 class="font-semibold text-[var(--accent-color)] border-b border-[var(--accent-border-color)] pb-1 mb-3">Perfil Tiroideo</h4>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-tsh" class="block text-sm font-medium text-[var(--text-label)] mb-1">TSH</label><input type="text" id="lab-tsh" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-tsh-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-tsh-norm" class="ml-2 text-xs">Normal</label></div></div>
-                                <div class="flex items-end gap-3"><div class="flex-grow"><label for="lab-t4l" class="block text-sm font-medium text-[var(--text-label)] mb-1">T4L</label><input type="text" id="lab-t4l" class="mt-1 block w-full rounded-md bg-[var(--input-bg)] border-[var(--border-color-heavy)] shadow-sm focus:border-[var(--accent-color)] focus:ring-[var(--accent-color)] sm:text-sm text-[var(--text-primary)]"></div><div class="flex items-center pb-2"><input type="checkbox" id="lab-t4l-norm" class="h-4 w-4 rounded border-[var(--border-color-heavy)] text-[var(--accent-color)] focus:ring-[var(--accent-color)] bg-[var(--input-bg)]"><label for="lab-t4l-norm" class="ml-2 text-xs">Normal</label></div></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-8 mb-4">
-                <button type="button" id="generate-report-btn" class="w-full inline-flex justify-center py-3 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-[var(--accent-color)] hover:bg-[var(--accent-color-dark)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent-color)] transition-transform transform hover:scale-105">
-                    Generar Informe
-                </button>
             </div>
         </form>
+
+        <!-- Barra de Navegación -->
+        <div class="fixed bottom-0 left-0 right-0 p-4 bg-[var(--card-bg-color)] border-t border-[var(--border-color)] shadow-lg">
+            <div class="max-w-4xl mx-auto flex justify-between items-center">
+                <button type="button" id="home-btn" class="text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)]">Volver al Inicio</button>
+                <div class="flex gap-4">
+                    <button type="button" id="prev-btn" class="inline-flex justify-center py-2 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-[var(--btn-secondary-bg)] hover:bg-[var(--btn-secondary-hover-bg)] transition-colors">Anterior</button>
+                    <button type="button" id="next-btn" class="inline-flex justify-center py-2 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-[var(--accent-color)] hover:bg-[var(--accent-color-dark)] transition-colors">Siguiente</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Vista del Informe -->
@@ -329,10 +375,22 @@
         <div class="bg-[var(--card-bg-color)] rounded-lg shadow-xl p-8">
             <h2 class="text-2xl font-bold text-center text-[var(--text-primary)] mb-6">Resumen del Paciente</h2>
             <div class="flex justify-center gap-4 mb-6">
-                <button type="button" id="back-to-form-btn" class="w-32 inline-flex justify-center py-3 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-[var(--btn-secondary-bg)] hover:bg-[var(--btn-secondary-hover-bg)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--btn-secondary-bg)] transition-transform transform hover:scale-105">Volver</button>
-                <button type="button" id="copy-report-btn" class="w-32 inline-flex justify-center py-3 px-6 border border-transparent rounded-full shadow-sm text-base font-medium text-white bg-[var(--accent-color)] hover:bg-[var(--accent-color-dark)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--accent-color)] transition-transform transform hover:scale-105">Copiar</button>
+                <button type="button" id="back-to-form-btn" class="w-auto px-4 py-2 inline-flex justify-center border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[var(--btn-secondary-bg)] hover:bg-[var(--btn-secondary-hover-bg)] transition-transform transform hover:scale-105">Volver al Formulario</button>
+                <button type="button" id="copy-report-btn" class="w-auto px-4 py-2 inline-flex justify-center border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-[var(--accent-color)] hover:bg-[var(--accent-color-dark)] transition-transform transform hover:scale-105">Copiar Resumen</button>
+                <button type="button" id="ai-analyze-btn" class="w-auto px-4 py-2 inline-flex items-center justify-center border border-transparent rounded-full shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-transform transform hover:scale-105">
+                    <span class="mr-2">✨</span> Analizar con IA
+                </button>
             </div>
             <pre id="report-content" class="w-full h-auto p-6 bg-[var(--bg-color)] rounded-lg border border-[var(--border-color)] text-sm text-[var(--text-primary)] max-h-[60vh] overflow-y-auto"></pre>
+            
+            <!-- Contenedor para el Análisis de IA -->
+            <div id="ai-analysis-container" class="hidden mt-6">
+                <h3 class="text-xl font-bold text-[var(--text-primary)] border-b-2 border-[var(--border-color)] pb-2 mb-4">Análisis con IA de Gemini</h3>
+                <div id="ai-loading" class="hidden flex justify-center items-center p-8">
+                    <div class="loader"></div>
+                </div>
+                <div id="ai-analysis-content" class="w-full p-6 bg-[var(--bg-color)] rounded-lg border border-[var(--border-color)] text-sm text-[var(--text-primary)]"></div>
+            </div>
         </div>
     </div>
 
@@ -371,19 +429,72 @@
             const mainView = document.getElementById('main-view');
             const reportView = document.getElementById('report-view');
             const startBtn = document.getElementById('start-btn');
-            const generateBtn = document.getElementById('generate-report-btn');
             const backBtn = document.getElementById('back-to-form-btn');
             const copyBtn = document.getElementById('copy-report-btn');
             const reportContent = document.getElementById('report-content');
+            const aiAnalyzeBtn = document.getElementById('ai-analyze-btn');
+            const aiAnalysisContainer = document.getElementById('ai-analysis-container');
+            const aiLoading = document.getElementById('ai-loading');
+            const aiAnalysisContent = document.getElementById('ai-analysis-content');
+            
+            // --- Lógica de Paginación ---
+            const formPages = document.querySelectorAll('.form-page');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const homeBtn = document.getElementById('home-btn');
+            const progressIndicator = document.getElementById('progress-indicator');
+            let currentPage = 0;
+
+            const showPage = (pageIndex) => {
+                formPages.forEach((page, index) => {
+                    page.classList.toggle('hidden', index !== pageIndex);
+                });
+                progressIndicator.textContent = `Paso ${pageIndex + 1} de ${formPages.length}`;
+                prevBtn.disabled = pageIndex === 0;
+                
+                if (pageIndex === formPages.length - 1) {
+                    nextBtn.textContent = 'Generar Informe';
+                } else {
+                    nextBtn.textContent = 'Siguiente';
+                }
+                window.scrollTo(0, 0);
+            };
+
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < formPages.length - 1) {
+                    currentPage++;
+                    showPage(currentPage);
+                } else {
+                    generateReport();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 0) {
+                    currentPage--;
+                    showPage(currentPage);
+                }
+            });
+            
+            homeBtn.addEventListener('click', () => {
+                mainView.classList.add('hidden');
+                reportView.classList.add('hidden');
+                welcomeView.classList.remove('hidden');
+                document.getElementById('clinical-form').reset(); 
+                currentPage = 0; 
+            });
 
             startBtn.addEventListener('click', () => {
                 welcomeView.classList.add('hidden');
                 mainView.classList.remove('hidden');
+                showPage(0);
             });
 
             backBtn.addEventListener('click', () => {
                 reportView.classList.add('hidden');
                 mainView.classList.remove('hidden');
+                aiAnalysisContainer.classList.add('hidden'); // Oculta el análisis al volver
+                showPage(currentPage);
             });
             
             document.querySelectorAll('input[name="lab-status"]').forEach(radio => {
@@ -411,9 +522,9 @@
                 return value || 'No especificado';
             };
 
-            generateBtn.addEventListener('click', () => {
+            const generateReport = () => {
                 let reportText = "=== RESUMEN CLÍNICO DEL PACIENTE ===\n\n";
-
+                // (El resto de la lógica de generación de informe se mantiene igual)
                 const addSection = (title, content) => {
                     if (content && (!Array.isArray(content) || content.length > 0)) {
                         reportText += `--- ${title.toUpperCase()} ---\n`;
@@ -425,7 +536,6 @@
                         reportText += "\n";
                     }
                 };
-                
                 const addKeyValueSection = (title, dataObject) => {
                      const entries = Object.entries(dataObject).filter(([key, value]) => value && String(value).trim() !== '' && String(value).trim() !== 'No especificado');
                      if(entries.length > 0) {
@@ -436,34 +546,27 @@
                          reportText += "\n";
                      }
                 };
-
                 const edad = getInputValue('edad');
                 const sexo = getRadioValue('sexo');
                 const imc = getInputValue('imc');
                 addKeyValueSection("Datos Demográficos", { "Edad": edad ? `${edad} años` : '', "Sexo": sexo, "IMC": imc });
                 addSection("Fototipos Cutáneos", getCheckedOptions('fototipos-container'));
                 addSection("Estilo de Vida y Exposición Solar", getCheckedOptions('estilo-vida-container'));
-                
                 const sedentarismoValue = document.getElementById('sedentarismo').checked ? 'Sí' : '';
                 addKeyValueSection("Factores Laborales", { "Puesto": getInputValue('puesto-trabajo'), "Jornada": getRadioValue('tipo-trabajo'), "Sedentarismo": sedentarismoValue });
-
                 const condicionesMedicas = [
                     ...getCheckedOptions('condiciones-medicas-container'),
                     ...getCheckedOptions('malabsorcion-container'),
                     ...getCheckedOptions('renal-container')
                 ];
                 addSection("Condiciones Médicas y Fisiológicas", condicionesMedicas);
-
                 const patologiaOsea = getCheckedOptions('patologia-osea-container');
                 addSection("Patología Ósea", patologiaOsea);
                 addSection("Localización Dolor Óseo Crónico", getCheckedOptions('dolor-oseo-container'));
-                
                 addSection("Localización Debilidad Muscular", getCheckedOptions('dolor-muscular-container'));
                 if (document.getElementById('calambres').checked) addSection("Síntomas Musculares Adicionales", ["Calambres musculares frecuentes"]);
                 addKeyValueSection("Temporalidad Muscular", { "Tipo": getRadioValue('temporalidad') });
-
                 addSection("Salud Hormonal", getCheckedOptions('salud-hormonal-container'));
-                
                 const salamancaScores = {
                     Paranoide: getInputValue('sq-par'), Esquizoide: getInputValue('sq-esq'), Esquizotípico: getInputValue('sq-eqt'),
                     Histriónico: getInputValue('sq-hist'), Antisocial: getInputValue('sq-ant'), Narcisista: getInputValue('sq-nar'),
@@ -471,7 +574,6 @@
                     Dependiente: getInputValue('sq-dep'), Ansioso: getInputValue('sq-ans'),
                 };
                 addKeyValueSection("Cuestionario Salamanca (Puntuaciones)", salamancaScores);
-
                 if (getRadioValue('lab-status') === 'realizado') {
                     reportText += "--- DATOS DE LABORATORIO ---\n";
                     const fechaDeterminacion = getInputValue('fecha-determinacion');
@@ -479,7 +581,6 @@
                     if (fechaDeterminacion) reportText += `Fecha: ${fechaDeterminacion}\n`;
                     if (niveles25ohd) reportText += `25-OH-Vitamina D: ${niveles25ohd} ng/mL\n`;
                     if(fechaDeterminacion || niveles25ohd) reportText += "\n";
-                    
                     addKeyValueSection("Perfil Diabetes", { Glucosa: getLabValue('lab-glucosa'), HbA1c: getLabValue('lab-hba1c'), Insulina: getLabValue('lab-insulina'), HOMA: getLabValue('lab-homa') });
                     addKeyValueSection("Perfil Lipídico", { 'Colesterol Total': getLabValue('lab-col-total'), 'Colesterol HDL': getLabValue('lab-col-hdl'), 'Colesterol LDL': getLabValue('lab-col-ldl'), Trigliceridos: getLabValue('lab-trigliceridos') });
                     addKeyValueSection("Perfil Renal", { Creatinina: getLabValue('lab-creatinina'), 'Filtrado Glomerular': getLabValue('lab-fg') });
@@ -492,10 +593,11 @@
                 reportContent.textContent = reportText;
                 mainView.classList.add('hidden');
                 reportView.classList.remove('hidden');
-            });
+            };
 
             copyBtn.addEventListener('click', () => {
                 const textToCopy = reportContent.textContent;
+                // (Lógica de copiado se mantiene igual)
                 const tempTextArea = document.createElement('textarea');
                 tempTextArea.value = textToCopy;
                 document.body.appendChild(tempTextArea);
@@ -515,6 +617,153 @@
                     console.error('No se pudo copiar el texto: ', err);
                 }
                 document.body.removeChild(tempTextArea);
+            });
+
+            // --- Lógica de Gemini API ---
+            aiAnalyzeBtn.addEventListener('click', async () => {
+                const reportText = reportContent.textContent;
+                if (!reportText || reportText.trim() === "=== RESUMEN CLÍNICO DEL PACIENTE ===") {
+                    aiAnalysisContent.textContent = "No hay datos en el informe para analizar.";
+                    aiAnalysisContainer.classList.remove('hidden');
+                    return;
+                }
+
+                aiAnalysisContainer.classList.remove('hidden');
+                aiLoading.classList.remove('hidden');
+                aiAnalysisContent.classList.add('hidden');
+                aiAnalyzeBtn.disabled = true;
+
+                // Añadir la fecha actual al informe para la IA
+                const today = new Date();
+                const reportDateString = today.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const fullReportForAI = `Fecha del informe: ${reportDateString}\n\n${reportText}`;
+
+                const systemPrompt = `
+                    **Objetivo:**
+                    Actuarás como un Asistente Clínico Experto en metabolismo de la vitamina D y salud ósea en adultos. Tu finalidad es evaluar la necesidad de cribado de vitamina D basándote en la evidencia y generar un informe clínico estructurado, conciso y accionable.
+
+                    **Contexto y Fuentes de Conocimiento:**
+                    Tus respuestas se basarán exclusivamente en las guías de práctica clínica españolas, incluyendo:
+                    - Guía de buena práctica clínica en Geriatría: Vitamina D en adulto mayor (SEGG, 2023).
+                    - Déficit de vitamina D: pautas de actuación y Seguimiento (2023).
+                    - Recomendaciones de uso adecuado de pruebas y suplementos de vitamina D (Ministerio de Sanidad, 2021).
+                    - Guía Farmacológica y Clínica de los Medicamentos con Vitamina D en España (2025).
+
+                    **Instrucciones de Funcionamiento:**
+                    1.  **Verificación de Datos:** Comprueba si dispones de toda la "Información Requerida". Si falta un dato crucial, solicítalo.
+                    2.  **Lógica de Puntuación:** Aplica el sistema de "Estratificación de Riesgo por Puntuación" para calcular el riesgo del paciente y determinar la necesidad de cribado.
+                    3.  **Generación de Respuesta:** Utiliza rigurosamente la "Estructura de la Salida".
+                    4.  **Cálculo de Fechas:** Para las recomendaciones farmacológicas no diarias, calcula las fechas de toma a partir de la "Fecha del informe" que se encuentra al inicio de los datos del paciente. Prioriza los lunes para las tomas semanales. También calcula la fecha para el control analítico y la siguiente consulta basándote en la misma fecha del informe.
+                    5.  **Neutralidad:** No incluyas opiniones personales ni información externa a las guías proporcionadas.
+                    6.  **Descargo de Responsabilidad:** Incluye siempre el aviso legal al final.
+
+                    **Información Requerida (Datos del Paciente):**
+                    - Edad: (años)
+                    - Sexo: (Hombre/Mujer)
+                    - Ocupación y Estilo de Vida: (ej. oficina, construcción; sedentario/activo)
+                    - Horas de Exposición Solar Semanal (estimado): (en cara y brazos)
+                    - Fototipo Cutáneo: (I-VI)
+                    - Índice de Masa Corporal (IMC): (kg/m²)
+                    - Problemas de salud relevantes: Enfermedad renal crónica, enfermedad hepática, síndromes de malabsorción (celiaquía, EII, cirugía bariátrica), osteoporosis, diabetes mellitus, HTA, insuficiencia cardiaca, asma, EPOC, enfermedades autoinmunes (artritis reumatoide, lupus), enfermedades granulomatosas (sarcoidosis), historial de caídas o fracturas.
+                    - Medicación Actual de Riesgo: Corticoides, antiepilépticos, antirretrovirales, rifampicina, colestiramina.
+                    - Síntomas Musculoesqueléticos: Debilidad muscular, dolor óseo difuso.
+                    - (Opcional) Resultado Analítico: Niveles de 25(OH)D en ng/mL.
+
+                    **Estratificación de Riesgo por Puntuación:**
+                    Calcula una puntuación total sumando los puntos de los factores de riesgo presentes para determinar el grado de riesgo y la recomendación de cribado.
+
+                    - **Factores de Alto Peso (10 puntos cada uno):** La presencia de uno solo ya indica "Riesgo Alto".
+                      - Enfermedad renal crónica (Estadios 3-5).
+                      - Enfermedad hepática crónica severa.
+                      - Síndromes de malabsorción demostrados.
+                      - Uso crónico de medicación de alto riesgo (corticoides sistémicos, antiepilépticos).
+                      - Diagnóstico de osteoporosis o fractura por fragilidad previa.
+                    - **Factores de Peso Moderado (3 puntos cada uno):**
+                      - Exposición solar muy limitada (<3 horas/semana, institucionalización).
+                      - Obesidad (IMC > 30 kg/m²).
+                      - Edad > 65 años.
+                      - Diabetes Mellitus (tipo 1 o 2).
+                      - Enfermedades autoinmunes (AR, LES).
+                    - **Factores de Bajo Peso (1 punto cada uno):**
+                      - Edad entre 50 y 65 años.
+                      - Fototipo cutáneo oscuro (IV-VI).
+                      - Síntomas inespecíficos (astenia, mialgias).
+                      - Estilo de vida sedentario con trabajo en interiores.
+                      - Hipertensión arterial, Insuficiencia cardiaca, Asma, EPOC.
+
+                    **Niveles de Riesgo y Acción:**
+                    - **Riesgo Alto (≥ 6 puntos o ≥ 1 factor de alto peso):** Cribado SÍ recomendado.
+                    - **Riesgo Moderado (3-5 puntos):** CONSIDERAR Cribado según juicio clínico.
+                    - **Riesgo Bajo (0-2 puntos):** Cribado NO recomendado.
+
+                    **Estructura de la Salida (Formato Obligatorio):**
+                    **Evaluación Clínica para Cribado de Vitamina D**
+                    **Paciente:** [Sexo], [Edad] años.
+                    **Perfil de Riesgo:** [Resumen narrativo de los factores de riesgo identificados y su peso].
+                    **Grado de Riesgo:** [Alto / Moderado / Bajo] (Puntuación: [Puntuación Total]).
+                    **Cribado:** [SÍ / NO / CONSIDERAR].
+                    **Justificación:** [Explicación concisa basada en la puntuación de riesgo obtenida].
+
+                    **Plan de Actuación Sugerido**
+                    **Pruebas Diagnósticas (si aplica):**
+                    - **Prueba Recomendada:** Determinación sérica de 25-hidroxivitamina D [25(OH)D].
+
+                    **Tratamiento Farmacológico (a ajustar según resultado analítico):**
+                    - **Fármaco de Elección:** [Indicar Colecalciferol o Calcifediol, con nombre comercial de referencia en España (ej. Hidroferol®, Vitamina D3 genérico) y justificar la elección].
+                    - **Pauta de Inicio (Choque):** [Especificar dosis, posología y duración. Por ejemplo: "Calcifediol 0,266 mg, 1 cápsula semanal durante 4 semanas". Añadir un listado con las fechas de las tomas calculadas desde la fecha de hoy, priorizando los lunes].
+                    - **Pauta de Mantenimiento:** [Especificar dosis, posología y duración. Por ejemplo: "Colecalciferol 800-1000 UI, 1 comprimido diario de forma continuada"].
+                    - **Aporte de Calcio:** Asegurar ingesta dietética de 1000-1200 mg/día. Considerar suplemento si la dieta es insuficiente.
+
+                    **Seguimiento y Monitorización:**
+                    - **Controles Analíticos:** [Indicar la fecha exacta, calculada a los 3-4 meses de finalizar la pauta de inicio, para repetir los niveles de 25(OH)D].
+                    - **Próxima Consulta:** [Indicar la fecha exacta, calculada a los 4-6 meses, para reevaluación clínica].
+
+                    **Recomendaciones Generales:**
+                    - **Exposición Solar:** [Recomendación específica y segura].
+                    - **Dieta:** [Sugerencias de alimentos ricos en vitamina D y calcio].
+                    - **Ejercicio Físico:** [Recomendación adaptada al paciente].
+
+                    **Descargo de Responsabilidad:**
+                    Este informe es una evaluación generada por IA basada en guías clínicas y no sustituye el juicio de un profesional sanitario. La decisión final debe ser tomada por el médico responsable del paciente.
+                `;
+                
+                try {
+                    const apiKey = ""; // Dejar en blanco, se gestiona automáticamente
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                    const payload = {
+                        contents: [{ parts: [{ text: fullReportForAI }] }],
+                        systemInstruction: {
+                            parts: [{ text: systemPrompt }]
+                        },
+                    };
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error de la API: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const analysisText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (analysisText) {
+                        aiAnalysisContent.textContent = analysisText;
+                    } else {
+                        aiAnalysisContent.textContent = "No se pudo obtener un análisis. La respuesta de la IA estaba vacía.";
+                    }
+                } catch (error) {
+                    console.error("Error al llamar a la API de Gemini:", error);
+                    aiAnalysisContent.textContent = "Hubo un error al contactar con el servicio de IA. Por favor, inténtalo de nuevo más tarde.";
+                } finally {
+                    aiLoading.classList.add('hidden');
+                    aiAnalysisContent.classList.remove('hidden');
+                    aiAnalyzeBtn.disabled = false;
+                }
             });
         });
     </script>
