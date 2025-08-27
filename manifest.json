@@ -1,0 +1,21 @@
+{
+  "name": "Formulario NESTORVIT 3.0",
+  "short_name": "NESTORVIT",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f0f4f8",
+  "theme_color": "#0d47a1",
+  "description": "Formulario clínico para NESTORVIT 3.0",
+  "icons": [
+    {
+      "src": "https://i.ibb.co/6rZ341j/Sin-t-tulo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://i.ibb.co/6rZ341j/Sin-t-tulo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
