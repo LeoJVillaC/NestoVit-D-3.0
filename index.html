@@ -632,6 +632,25 @@
                 aiLoading.classList.remove('hidden');
                 aiAnalysisContent.classList.add('hidden');
                 aiAnalyzeBtn.disabled = true;
+                
+                // --- IMPORTANTE: Configuración de la API de Gemini ---
+                // Para que esta función se ejecute fuera del entorno de vista previa (por ejemplo, en GitHub),
+                // necesitas tu propia clave de API de Google AI Studio.
+                // OBTÉN TU CLAVE AQUÍ: https://aistudio.google.com/app/apikey
+                // ADVERTENCIA: Pegar tu clave de API directamente en el código del lado del cliente (HTML/JS)
+                // es INSEGURO. Cualquiera que visite tu página web podrá verla. Esto es solo para fines
+                // de demostración. Para una aplicación real, la clave debe gestionarse en un servidor backend.
+                const apiKey = "AQUÍ_VA_TU_CLAVE_DE_API_DE_GEMINI"; 
+
+                if (apiKey === "AQUÍ_VA_TU_CLAVE_DE_API_DE_GEMINI") {
+                    aiAnalysisContent.textContent = "Error de configuración: La clave de la API de Gemini no ha sido añadida al código. Por favor, sigue las instrucciones en los comentarios del archivo HTML.";
+                    aiAnalysisContainer.classList.remove('hidden');
+                    aiLoading.classList.add('hidden');
+                    aiAnalysisContent.classList.remove('hidden');
+                    aiAnalyzeBtn.disabled = false;
+                    return;
+                }
+
 
                 // Añadir la fecha actual al informe para la IA
                 const today = new Date();
@@ -728,7 +747,6 @@
                 `;
                 
                 try {
-                    const apiKey = ""; // Dejar en blanco, se gestiona automáticamente
                     const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
                     const apiUrl = `${proxyUrl}https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
